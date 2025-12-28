@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import Script from "next/script";
 
 const isProduction = process.env.NEXT_PUBLIC_SITE_ENV === "production";
 
@@ -47,6 +48,11 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
+        <Script
+          defer
+          src="https://tracking-zeta-two.vercel.app/script.js"
+          data-website-id="c8b3a517-4d85-49d2-b746-a2f81d2177d4"
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
