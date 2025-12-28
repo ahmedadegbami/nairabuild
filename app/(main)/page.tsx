@@ -1,20 +1,21 @@
-import Blocks from "@/components/blocks";
-import { fetchSanityPageBySlug } from "@/sanity/lib/fetch";
-import { generatePageMetadata } from "@/sanity/lib/metadata";
-import MissingSanityPage from "@/components/ui/missing-sanity-page";
-
-export async function generateMetadata() {
-  const page = await fetchSanityPageBySlug({ slug: "index" });
-
-  return generatePageMetadata({ page, slug: "index" });
-}
+import { fetchSanityBlogSettings } from "@/sanity/lib/fetch";
 
 export default async function IndexPage() {
-  const page = await fetchSanityPageBySlug({ slug: "index" });
+  const blogSettings = await fetchSanityBlogSettings();
+  const isUnderConstruction = blogSettings?.underConstruction;
+  const message =
+    blogSettings?.message?.trim() || "The blog is under construction.";
 
-  if (!page) {
-    return MissingSanityPage({ document: "page", slug: "index" });
-  }
-
-  return <Blocks blocks={page?.blocks ?? []} />;
+  return (
+    <section className="container py-16 xl:py-20">
+      <div className="mx-auto flex max-w-2xl flex-col items-center text-center align-center">
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Welcome to Nairabuild
+        </h1>
+        <p className="mt-4 text-lg text-muted-foreground">
+          {isUnderConstruction ? message : "The blog is live."}
+        </p>
+      </div>
+    </section>
+  );
 }

@@ -1,27 +1,23 @@
+import Image from "next/image";
 import Link from "next/link";
-import Logo from "@/components/logo";
-import MobileNav from "@/components/header/mobile-nav";
-import DesktopNav from "@/components/header/desktop-nav";
-import { ModeToggle } from "@/components/menu-toggle";
-import { fetchSanitySettings, fetchSanityNavigation } from "@/sanity/lib/fetch";
 
-export default async function Header() {
-  const settings = await fetchSanitySettings();
-  const navigation = await fetchSanityNavigation();
+export default function Header() {
   return (
-    <header className="sticky top-0 w-full border-border/40 bg-background/95 z-50">
-      <div className="container flex items-center justify-between h-14">
-        <Link href="/" aria-label="Home page">
-          <Logo settings={settings} />
+    <header className="sticky top-0 z-50 w-full border-border/40 bg-background/95">
+      <div className="container flex h-14 items-center justify-between">
+        <Link
+          href="/"
+          aria-label="Home page"
+          className="flex items-center pt-4"
+        >
+          <Image
+            src="/naira_build_logo.svg"
+            alt="Naira Build"
+            width={100}
+            height={80}
+            priority
+          />
         </Link>
-        <div className="hidden xl:flex gap-7 items-center justify-between">
-          <DesktopNav navigation={navigation} />
-          <ModeToggle />
-        </div>
-        <div className="flex items-center xl:hidden">
-          <ModeToggle />
-          <MobileNav navigation={navigation} settings={settings} />
-        </div>
       </div>
     </header>
   );

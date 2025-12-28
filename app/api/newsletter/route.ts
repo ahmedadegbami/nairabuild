@@ -1,20 +1,28 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export const POST = async (request: Request) => {
   const { email } = await request.json();
+  const resendApiKey = process.env.RESEND_API_KEY;
+  const audienceId = process.env.RESEND_AUDIENCE_ID;
 
-  // Create contact
+  if (!resendApiKey || !audienceId) {
+    return Response.json(
+      { error: "Newsletter is not configured." },
+      { status: 500 }
+    );
+  }
+
+  const resend = new Resend(resendApiKey);
+
   try {
-    resend.contacts.create({
+    await resend.contacts.create({
       email,
       unsubscribed: false,
-      audienceId: process.env.RESEND_AUDIENCE_ID!,
+      audienceId,
     });
 
     return Response.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     return Response.json(
       { error: "Error subscribing to updates" },
       { status: 400 }
