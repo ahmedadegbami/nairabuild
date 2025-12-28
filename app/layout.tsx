@@ -39,7 +39,10 @@ export const metadata: Metadata = {
     images: [`${process.env.NEXT_PUBLIC_SITE_URL}/naira_build_logo.png`],
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/naira_build_logo.png", type: "image/png" },
+      "/favicon.ico",
+    ],
   },
   robots: !isProduction ? "noindex, nofollow" : "index, follow",
 };
@@ -57,7 +60,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <link rel="icon" href="/favicon.ico" />
+      <link rel="icon" href="/naira_build_logo.png?v=1" type="image/png" />
+      <link rel="apple-touch-icon" href="/naira_build_logo.png?v=1" />
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased overscroll-none",
