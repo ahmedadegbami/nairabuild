@@ -11,19 +11,35 @@ const isProduction = process.env.NEXT_PUBLIC_SITE_ENV === "production";
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL!),
   title: {
-    template: "%s | Schema UI Starter",
-    default: "Sanity Next.js Website | Schema UI Starter",
+    template: "%s | Nairabuild",
+    default: "Nairabuild | Solutions & Innovation Blog",
   },
+  description:
+    "A blog sharing solutions and innovation across construction, engineering, and technology.",
   openGraph: {
+    title: "Nairabuild | Solutions & Innovation Blog",
+    description:
+      "A blog sharing solutions and innovation across construction, engineering, and technology.",
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_SITE_URL}/images/og-image.jpg`,
+        url: `${process.env.NEXT_PUBLIC_SITE_URL}/naira_build_logo.png`,
         width: 1200,
         height: 630,
+        alt: "Nairabuild logo",
       },
     ],
     locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Nairabuild | Solutions & Innovation Blog",
+    description:
+      "A blog sharing solutions and innovation across construction, engineering, and technology.",
+    images: [`${process.env.NEXT_PUBLIC_SITE_URL}/naira_build_logo.png`],
+  },
+  icons: {
+    icon: "/favicon.ico",
   },
   robots: !isProduction ? "noindex, nofollow" : "index, follow",
 };

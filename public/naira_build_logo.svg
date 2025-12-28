@@ -1,22 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -10 540 240" preserveAspectRatio="xMidYMid meet" role="img" aria-label="NairaBuild logo">
   <title>NairaBuild</title>
-
   <defs>
     <style>
-      :root{ --green:#1B8F3A; }
-      text{ font-family: Inter, Poppins, system-ui, -apple-system, "Segoe UI", Arial, sans-serif; }
-      .gStroke{ stroke:var(--green); stroke-width:26; stroke-linecap:round; stroke-linejoin:round; fill:none; }
-      .gFill{ fill:var(--green); }
+      text { font-family: Inter, Poppins, system-ui, -apple-system, "Segoe UI", Arial, sans-serif; }
     </style>
   </defs>
 
   <!-- Bold straight ₦ -->
   <g>
-    <path class="gStroke" d="M12 10 V180 M12 10 L114 180 M114 10 V180"></path>
-    <path class="gStroke" d="M0 82 H126"></path>
-    <path class="gStroke" d="M0 128 H126"></path>
+    <path d="M12 10 V180 M12 10 L114 180 M114 10 V180" fill="none" stroke="#1B8F3A" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M0 82 H126" fill="none" stroke="#1B8F3A" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M0 128 H126" fill="none" stroke="#1B8F3A" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 
   <!-- Build: tight letters -->
-  <text x="146" y="180" font-size="170" font-weight="800" letter-spacing="-6" class="gFill">Build</text>
+  <text x="146" y="180" font-size="170" font-weight="800" letter-spacing="-6" fill="#1B8F3A">Build</text>
 </svg>
