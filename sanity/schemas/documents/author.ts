@@ -26,7 +26,7 @@ export default defineType({
     defineField({
       name: "bio",
       title: "Bio",
-      type: "text",
+      type: "blockContent",
     }),
     defineField({
       name: "image",

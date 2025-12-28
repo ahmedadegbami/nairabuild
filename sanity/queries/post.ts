@@ -36,6 +36,25 @@ export const POSTS_BY_CATEGORY_QUERY = groq`*[_type == "post" && defined(slug.cu
   }
 }`;
 
+export const POSTS_BY_AUTHOR_QUERY = groq`*[_type == "post" && defined(slug.current) && author->slug.current == $authorSlug] | order(publishedAt desc){
+  _id,
+  title,
+  slug,
+  excerpt,
+  publishedAt,
+  mainImage,
+  categories[]->{
+    _id,
+    title,
+    slug
+  },
+  author->{
+    name,
+    slug,
+    image
+  }
+}`;
+
 export const POST_BY_SLUG_QUERY = groq`*[_type == "post" && slug.current == $slug][0]{
   _id,
   title,
@@ -62,6 +81,7 @@ export const POST_BY_SLUG_QUERY = groq`*[_type == "post" && slug.current == $slu
   },
   author->{
     name,
+    slug,
     image,
     bio
   }

@@ -7,12 +7,14 @@ import { AUTHOR_GUIDE_QUERY } from "@/sanity/queries/author-guide";
 import { CATEGORIES_QUERY } from "@/sanity/queries/category";
 import {
   POST_BY_SLUG_QUERY,
+  POSTS_BY_AUTHOR_QUERY,
   POSTS_BY_CATEGORY_QUERY,
   POSTS_QUERY,
   POSTS_EXCEPT_QUERY,
   RELATED_POSTS_QUERY,
 } from "@/sanity/queries/post";
 import { COMMENTS_BY_POST_QUERY } from "@/sanity/queries/comment";
+import { AUTHOR_BY_SLUG_QUERY } from "@/sanity/queries/author";
 
 export type Category = {
   _id: string;
@@ -30,6 +32,7 @@ export type Post = {
   categories?: Category[];
   author?: {
     name?: string;
+    slug?: { current: string };
     image?: any;
     bio?: string;
   };
@@ -85,6 +88,14 @@ export type AuthorGuide = {
   email?: string;
 };
 
+export type Author = {
+  _id: string;
+  name?: string;
+  slug?: { current: string };
+  bio?: string;
+  image?: any;
+};
+
 export type Comment = {
   _id: string;
   name: string;
@@ -133,6 +144,17 @@ export const fetchAuthorGuide = async (): Promise<AuthorGuide | null> => {
   return data ?? null;
 };
 
+export const fetchAuthorBySlug = async (
+  slug: string
+): Promise<Author | null> => {
+  const { data } = await sanityFetch({
+    query: AUTHOR_BY_SLUG_QUERY,
+    params: { slug },
+  });
+
+  return data ?? null;
+};
+
 export const fetchCategories = async (): Promise<Category[]> => {
   const { data } = await sanityFetch({
     query: CATEGORIES_QUERY,
@@ -155,6 +177,17 @@ export const fetchPostsByCategory = async (
   const { data } = await sanityFetch({
     query: POSTS_BY_CATEGORY_QUERY,
     params: { categorySlug },
+  });
+
+  return data ?? [];
+};
+
+export const fetchPostsByAuthor = async (
+  authorSlug: string
+): Promise<Post[]> => {
+  const { data } = await sanityFetch({
+    query: POSTS_BY_AUTHOR_QUERY,
+    params: { authorSlug },
   });
 
   return data ?? [];

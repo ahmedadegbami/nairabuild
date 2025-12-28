@@ -164,7 +164,7 @@ export default async function IndexPage({ searchParams }: PageProps) {
                     href={`/blog/${post.slug?.current}`}
                     className="group flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-background shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
                   >
-                    <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
+                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
                       {post.mainImage ? (
                         <Image
                           src={urlFor(post.mainImage).width(800).height(500).url()}

@@ -123,6 +123,14 @@ export default async function PostPage({ params }: PageProps) {
           {post.publishedAt ? (
             <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
           ) : null}
+          {post.author?.name ? (
+            <Link
+              href={`/author/${post.author.slug?.current}`}
+              className="text-foreground underline decoration-emerald-400/80 underline-offset-4"
+            >
+              {post.author.name}
+            </Link>
+          ) : null}
         </div>
         {post.mainImage ? (
           <div className="mx-auto w-fit max-w-full overflow-hidden rounded-3xl border border-border/60 bg-muted">
