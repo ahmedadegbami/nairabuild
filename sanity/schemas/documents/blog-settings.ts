@@ -1,24 +1,21 @@
 import { defineField, defineType } from "sanity";
-import { Settings } from "lucide-react";
+import { BookOpen } from "lucide-react";
 
 export default defineType({
   name: "blogSettings",
   title: "Blog Settings",
   type: "document",
-  icon: Settings,
+  icon: BookOpen,
   fields: [
     defineField({
-      name: "underConstruction",
-      title: "Under Construction",
-      type: "boolean",
-      initialValue: false,
+      name: "backToPostsLabel",
+      title: "Back to Posts Label",
+      type: "string",
     }),
     defineField({
-      name: "message",
-      title: "Message",
-      type: "text",
-      initialValue: "The blog is under construction.",
-      validation: (Rule) => Rule.max(200),
+      name: "relatedPostsTitle",
+      title: "Related Posts Title",
+      type: "string",
     }),
   ],
   preview: {
