@@ -143,26 +143,28 @@ export default async function IndexPage({ searchParams }: PageProps) {
               {settings?.categoriesTitle}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
+            <Link
+              href="/"
+              scroll={false}
+              className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-widest ${
+                !selectedCategory
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-border text-foreground/70"
+              }`}
+            >
+              {settings?.allCategoriesLabel}
+            </Link>
+            {categories.map((category) => (
               <Link
-                href="/"
+                key={category._id}
+                href={`/?category=${category.slug?.current}`}
+                scroll={false}
                 className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-widest ${
-                  !selectedCategory
+                  selectedCategory === category.slug?.current
                     ? "border-foreground bg-foreground text-background"
                     : "border-border text-foreground/70"
                 }`}
               >
-                {settings?.allCategoriesLabel}
-              </Link>
-              {categories.map((category) => (
-                <Link
-                  key={category._id}
-                  href={`/?category=${category.slug?.current}`}
-                  className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-widest ${
-                    selectedCategory === category.slug?.current
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border text-foreground/70"
-                  }`}
-                >
                   {category.title}
                 </Link>
               ))}

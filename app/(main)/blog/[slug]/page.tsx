@@ -126,8 +126,9 @@ export default async function PostPage({ params }: PageProps) {
   }
 
   const categorySlugs =
-    post.categories?.map((category) => category.slug?.current).filter(Boolean) ??
-    [];
+    post.categories
+      ?.map((category) => category.slug?.current)
+      .filter(Boolean) ?? [];
   const [relatedPosts, fallbackPosts, comments] = await Promise.all([
     categorySlugs.length
       ? fetchRelatedPosts(post._id, categorySlugs as string[])
@@ -171,23 +172,33 @@ export default async function PostPage({ params }: PageProps) {
           {post.publishedAt ? (
             <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
           ) : null}
-          {post.author?.name ? (
+        </div>
+        {post.author?.name ? (
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            {post.author.image ? (
+              <div className="relative h-7 w-7 overflow-hidden rounded-full border border-border/60 bg-muted">
+                <Image
+                  src={urlFor(post.author.image).width(56).height(56).url()}
+                  alt={post.author.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            ) : null}
             <Link
               href={`/author/${post.author.slug?.current}`}
-              className="text-foreground underline decoration-emerald-400/80 underline-offset-4"
+              className="font-semibold text-foreground underline decoration-emerald-400/80 underline-offset-4"
             >
               {post.author.name}
             </Link>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
         {post.mainImage ? (
           <div className="mx-auto w-fit max-w-full overflow-hidden rounded-3xl border border-border/60 bg-muted">
             <Image
               src={urlFor(post.mainImage).width(1600).url()}
               alt={post.title}
-              width={
-                post.mainImage?.asset?.metadata?.dimensions?.width || 1200
-              }
+              width={post.mainImage?.asset?.metadata?.dimensions?.width || 1200}
               height={
                 post.mainImage?.asset?.metadata?.dimensions?.height || 800
               }
