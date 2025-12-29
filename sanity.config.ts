@@ -30,6 +30,7 @@ const singletonTypes = new Set([
   "blogSettings",
   "commentSettings",
   "authorGuide",
+  "privacyPolicy",
 ]);
 
 export default defineConfig({

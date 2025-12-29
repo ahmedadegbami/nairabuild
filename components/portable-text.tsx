@@ -27,11 +27,18 @@ const components: PortableTextComponents = {
   },
   marks: {
     link: ({ value, children }) => {
+      const rawHref = value?.href as string | undefined;
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const isEmail = rawHref ? emailPattern.test(rawHref) : false;
+      const href =
+        rawHref && isEmail && !rawHref.startsWith("mailto:")
+          ? `mailto:${rawHref}`
+          : rawHref;
       const target = value?.blank ? "_blank" : undefined;
       const rel = value?.blank ? "noopener noreferrer" : undefined;
       return (
         <a
-          href={value?.href}
+          href={href}
           target={target}
           rel={rel}
           className="underline decoration-amber-400/80 underline-offset-4"
@@ -43,12 +50,12 @@ const components: PortableTextComponents = {
   },
   list: {
     bullet: ({ children }) => (
-      <ul className="mt-5 list-disc space-y-2 pl-5 text-foreground/90">
+      <ul className="mt-3 list-disc space-y-1.5 pl-5 text-foreground/90">
         {children}
       </ul>
     ),
     number: ({ children }) => (
-      <ol className="mt-5 list-decimal space-y-2 pl-5 text-foreground/90">
+      <ol className="mt-3 list-decimal space-y-1.5 pl-5 text-foreground/90">
         {children}
       </ol>
     ),

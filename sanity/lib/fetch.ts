@@ -4,6 +4,7 @@ import { HOME_SETTINGS_QUERY } from "@/sanity/queries/home-settings";
 import { BLOG_SETTINGS_QUERY } from "@/sanity/queries/blog-settings";
 import { COMMENT_SETTINGS_QUERY } from "@/sanity/queries/comment-settings";
 import { AUTHOR_GUIDE_QUERY } from "@/sanity/queries/author-guide";
+import { PRIVACY_POLICY_QUERY } from "@/sanity/queries/privacy-policy";
 import { CATEGORIES_QUERY } from "@/sanity/queries/category";
 import {
   POST_BY_SLUG_QUERY,
@@ -88,6 +89,12 @@ export type AuthorGuide = {
   email?: string;
 };
 
+export type PrivacyPolicy = {
+  title?: string;
+  lastUpdated?: string;
+  body?: any;
+};
+
 export type Author = {
   _id: string;
   name?: string;
@@ -139,6 +146,14 @@ export const fetchCommentSettings = async (): Promise<CommentSettings | null> =>
 export const fetchAuthorGuide = async (): Promise<AuthorGuide | null> => {
   const { data } = await sanityFetch({
     query: AUTHOR_GUIDE_QUERY,
+  });
+
+  return data ?? null;
+};
+
+export const fetchPrivacyPolicy = async (): Promise<PrivacyPolicy | null> => {
+  const { data } = await sanityFetch({
+    query: PRIVACY_POLICY_QUERY,
   });
 
   return data ?? null;

@@ -7,6 +7,7 @@ import {
   Home,
   BookOpen,
   PenSquare,
+  Shield,
 } from "lucide-react";
 
 export const structure = (S: any) =>
@@ -73,6 +74,15 @@ export const structure = (S: any) =>
             .id("authorGuide")
             .schemaType("authorGuide")
             .documentId("authorGuide")
+        ),
+      S.listItem()
+        .title("Privacy Policy")
+        .icon(Shield)
+        .child(
+          S.editor()
+            .id("privacyPolicy")
+            .schemaType("privacyPolicy")
+            .documentId("privacyPolicy")
         ),
       S.listItem()
         .title("Site Settings")

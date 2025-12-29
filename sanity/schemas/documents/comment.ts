@@ -36,6 +36,19 @@ export default defineType({
       title: "Parent Comment",
       type: "reference",
       to: [{ type: "comment" }],
+      options: {
+        filter: ({ document }) => {
+          const postId = document?.post?._ref;
+          const selfId = document?._id;
+          if (!postId) {
+            return { filter: `_type == "comment"` };
+          }
+          return {
+            filter: `_type == "comment" && post._ref == $postId && _id != $selfId`,
+            params: { postId, selfId },
+          };
+        },
+      },
     }),
     defineField({
       name: "status",
@@ -72,12 +85,14 @@ export default defineType({
   preview: {
     select: {
       title: "name",
-      subtitle: "post.title",
+      body: "body",
+      postTitle: "post.title",
     },
-    prepare({ title, subtitle }) {
+    prepare({ title, body, postTitle }) {
+      const snippet = body ? `${body}`.slice(0, 80) : "";
       return {
         title: title || "Comment",
-        subtitle,
+        subtitle: [snippet, postTitle].filter(Boolean).join(" · "),
       };
     },
   },

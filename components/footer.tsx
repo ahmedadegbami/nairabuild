@@ -9,6 +9,9 @@ export default async function Footer() {
           &copy; {new Date().getFullYear()} {settings?.siteName}
         </span>
         {settings?.footerText ? <span>{settings.footerText}</span> : null}
+        <a className="text-foreground/70 underline underline-offset-4" href="/privacy-policy">
+          Privacy Policy
+        </a>
       </div>
     </footer>
   );

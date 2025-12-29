@@ -29,8 +29,24 @@ export default defineType({
             fields: [
               {
                 name: "href",
-                type: "url",
+                type: "string",
                 title: "URL",
+                validation: (Rule) =>
+                  Rule.custom((value) => {
+                    if (!value) return true;
+                    const href = typeof value === "string" ? value : "";
+                    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (href.startsWith("/")) return true;
+                    if (href.startsWith("mailto:")) return true;
+                    if (
+                      href.startsWith("http://") ||
+                      href.startsWith("https://")
+                    ) {
+                      return true;
+                    }
+                    if (emailPattern.test(href)) return true;
+                    return "Use /, http(s)://, mailto:, or an email address.";
+                  }),
               },
               {
                 name: "blank",
