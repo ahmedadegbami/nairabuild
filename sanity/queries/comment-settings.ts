@@ -11,6 +11,22 @@ export const COMMENT_SETTINGS_QUERY = groq`*[_type == "commentSettings"][0]{
   commentBodyLabel,
   commentBodyPlaceholder,
   commentSubmitLabel,
+  commentSignInTitle,
+  commentSignInHelper,
+  commentSignInButtonLabel,
+  commentSignInSentMessage,
+  commentSignInErrorMessage,
+  commentSignOutLabel,
+  commentLeaveLabel,
+  commentReplyLabel,
+  commentEditLabel,
+  commentDeleteLabel,
+  commentEditedLabel,
+  commentDeletedLabel,
+  commentShowRepliesLabel,
+  commentHideRepliesLabel,
+  commentAuthorBadgeLabel,
   commentSuccessMessage,
-  commentErrorMessage
+  commentErrorMessage,
+  commentRateLimitMessage
 }`;

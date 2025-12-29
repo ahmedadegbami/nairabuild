@@ -38,8 +38,12 @@ export default defineType({
       to: [{ type: "comment" }],
       options: {
         filter: ({ document }) => {
-          const postId = document?.post?._ref;
-          const selfId = document?._id;
+          const current = document as {
+            _id?: string;
+            post?: { _ref?: string };
+          };
+          const postId = current.post?._ref;
+          const selfId = current._id;
           if (!postId) {
             return { filter: `_type == "comment"` };
           }
@@ -49,6 +53,18 @@ export default defineType({
           };
         },
       },
+    }),
+    defineField({
+      name: "isStaff",
+      title: "Verified Author Reply",
+      type: "boolean",
+      initialValue: false,
+    }),
+    defineField({
+      name: "staffAuthor",
+      title: "Author",
+      type: "reference",
+      to: [{ type: "author" }],
     }),
     defineField({
       name: "status",
@@ -62,6 +78,12 @@ export default defineType({
         ],
       },
       initialValue: "approved",
+    }),
+    defineField({
+      name: "userId",
+      title: "User ID",
+      type: "string",
+      readOnly: true,
     }),
     defineField({
       name: "ipHash",
@@ -78,6 +100,18 @@ export default defineType({
     defineField({
       name: "createdAt",
       title: "Created At",
+      type: "datetime",
+      readOnly: true,
+    }),
+    defineField({
+      name: "editedAt",
+      title: "Edited At",
+      type: "datetime",
+      readOnly: true,
+    }),
+    defineField({
+      name: "deletedAt",
+      title: "Deleted At",
       type: "datetime",
       readOnly: true,
     }),

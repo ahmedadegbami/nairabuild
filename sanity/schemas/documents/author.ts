@@ -24,6 +24,13 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "authorEmail",
+      title: "Author Email",
+      type: "string",
+      description: "Used to filter comments by the logged-in author.",
+      validation: (Rule) => Rule.email(),
+    }),
+    defineField({
       name: "bio",
       title: "Bio",
       type: "blockContent",

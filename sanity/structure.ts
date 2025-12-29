@@ -10,7 +10,7 @@ import {
   Shield,
 } from "lucide-react";
 
-export const structure = (S: any) =>
+export const structure = (S: any, context: any) =>
   S.list()
     .title("Content")
     .items([
@@ -33,11 +33,39 @@ export const structure = (S: any) =>
       S.listItem()
         .title("Comments")
         .icon(MessageSquare)
-        .child(
-          S.documentTypeList("comment")
+        .child(() => {
+          const email = context?.currentUser?.email as string | undefined;
+          return S.list()
             .title("Comments")
-            .defaultOrdering([{ field: "createdAt", direction: "desc" }])
-        ),
+            .items([
+              S.listItem()
+                .title("All Comments")
+                .child(
+                  S.documentTypeList("comment")
+                    .title("All Comments")
+                    .defaultOrdering([
+                      { field: "createdAt", direction: "desc" },
+                    ])
+                ),
+              S.listItem()
+                .title("My Post Comments")
+                .child(
+                  email
+                    ? S.documentTypeList("comment")
+                        .title("My Post Comments")
+                        .filter(
+                          `_type == "comment" && post->author->authorEmail == $email`
+                        )
+                        .params({ email })
+                        .defaultOrdering([
+                          { field: "createdAt", direction: "desc" },
+                        ])
+                    : S.documentList()
+                        .title("My Post Comments")
+                        .filter(`_id == "no-user"`)
+                ),
+            ]);
+        }),
       S.divider(),
       S.listItem()
         .title("Home Settings")

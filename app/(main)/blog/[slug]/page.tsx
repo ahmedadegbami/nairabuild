@@ -22,8 +22,18 @@ type PageProps = {
 type CommentNode = {
   _id: string;
   name: string;
+  email?: string;
   body: string;
   createdAt?: string;
+  isStaff?: boolean;
+  userId?: string | null;
+  editedAt?: string | null;
+  deletedAt?: string | null;
+  staffAuthor?: {
+    _id?: string;
+    name?: string;
+    slug?: { current: string };
+  };
   replies: CommentNode[];
 };
 
@@ -44,8 +54,14 @@ const buildCommentTree = (comments: any[]): CommentNode[] => {
     map.set(comment._id, {
       _id: comment._id,
       name: comment.name,
+      email: comment.email,
       body: comment.body,
       createdAt: comment.createdAt,
+      isStaff: comment.isStaff,
+      userId: comment.userId,
+      editedAt: comment.editedAt,
+      deletedAt: comment.deletedAt,
+      staffAuthor: comment.staffAuthor,
       replies: [],
     });
   });
@@ -257,7 +273,7 @@ export default async function PostPage({ params }: PageProps) {
           </div>
         </section>
       ) : null}
-      <section className="mx-auto w-full max-w-3xl">
+      <section id="comments" className="mx-auto w-full max-w-3xl">
         <CommentThread
           postId={post._id}
           comments={commentTree}
@@ -270,8 +286,24 @@ export default async function PostPage({ params }: PageProps) {
             bodyLabel: commentSettings?.commentBodyLabel,
             bodyPlaceholder: commentSettings?.commentBodyPlaceholder,
             submitLabel: commentSettings?.commentSubmitLabel,
+            signInTitle: commentSettings?.commentSignInTitle,
+            signInHelper: commentSettings?.commentSignInHelper,
+            signInButtonLabel: commentSettings?.commentSignInButtonLabel,
+            signInSentMessage: commentSettings?.commentSignInSentMessage,
+            signInErrorMessage: commentSettings?.commentSignInErrorMessage,
+            signOutLabel: commentSettings?.commentSignOutLabel,
+            leaveLabel: commentSettings?.commentLeaveLabel,
+            replyLabel: commentSettings?.commentReplyLabel,
+            editLabel: commentSettings?.commentEditLabel,
+            deleteLabel: commentSettings?.commentDeleteLabel,
+            editedLabel: commentSettings?.commentEditedLabel,
+            deletedLabel: commentSettings?.commentDeletedLabel,
+            showRepliesLabel: commentSettings?.commentShowRepliesLabel,
+            hideRepliesLabel: commentSettings?.commentHideRepliesLabel,
+            authorBadgeLabel: commentSettings?.commentAuthorBadgeLabel,
             successMessage: commentSettings?.commentSuccessMessage,
             errorMessage: commentSettings?.commentErrorMessage,
+            rateLimitMessage: commentSettings?.commentRateLimitMessage,
           }}
           emptyText={commentSettings?.commentsEmptyText}
         />

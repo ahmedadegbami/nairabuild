@@ -77,8 +77,24 @@ export type CommentSettings = {
   commentBodyLabel?: string;
   commentBodyPlaceholder?: string;
   commentSubmitLabel?: string;
+  commentSignInTitle?: string;
+  commentSignInHelper?: string;
+  commentSignInButtonLabel?: string;
+  commentSignInSentMessage?: string;
+  commentSignInErrorMessage?: string;
+  commentSignOutLabel?: string;
+  commentLeaveLabel?: string;
+  commentReplyLabel?: string;
+  commentEditLabel?: string;
+  commentDeleteLabel?: string;
+  commentEditedLabel?: string;
+  commentDeletedLabel?: string;
+  commentShowRepliesLabel?: string;
+  commentHideRepliesLabel?: string;
+  commentAuthorBadgeLabel?: string;
   commentSuccessMessage?: string;
   commentErrorMessage?: string;
+  commentRateLimitMessage?: string;
 };
 
 export type AuthorGuide = {
@@ -106,9 +122,19 @@ export type Author = {
 export type Comment = {
   _id: string;
   name: string;
+  email?: string;
   body: string;
   createdAt?: string;
   parentId?: string | null;
+  isStaff?: boolean;
+  userId?: string;
+  editedAt?: string;
+  deletedAt?: string;
+  staffAuthor?: {
+    _id?: string;
+    name?: string;
+    slug?: { current: string };
+  };
 };
 
 export const fetchSiteSettings = async (): Promise<SiteSettings | null> => {

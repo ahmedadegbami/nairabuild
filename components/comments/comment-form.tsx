@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type CommentFormLabels = {
   title?: string;
@@ -14,6 +15,7 @@ type CommentFormLabels = {
   submitLabel?: string;
   successMessage?: string;
   errorMessage?: string;
+  rateLimitMessage?: string;
 };
 
 type CommentFormProps = {
@@ -27,6 +29,15 @@ type CommentFormProps = {
     body: string;
     createdAt?: string;
     parentId?: string | null;
+    isStaff?: boolean;
+    userId?: string | null;
+    editedAt?: string | null;
+    deletedAt?: string | null;
+    staffAuthor?: {
+      _id?: string;
+      name?: string;
+      slug?: { current: string };
+    };
   }) => void;
 };
 
@@ -38,9 +49,10 @@ export default function CommentForm({
   onSuccess,
 }: CommentFormProps) {
   const router = useRouter();
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
-    "idle"
-  );
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -59,9 +71,25 @@ export default function CommentForm({
     event.preventDefault();
     setStatus("loading");
 
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) {
+      setStatus("error");
+      return;
+    }
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+
+    if (!accessToken) {
+      setStatus("error");
+      return;
+    }
+
     const response = await fetch("/api/comments", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
       body: JSON.stringify({
         postId,
         parentId,
@@ -76,6 +104,7 @@ export default function CommentForm({
       const data = await response.json();
       setForm({ name: "", email: "", body: "", website: "" });
       setStatus("success");
+      setErrorMessage(null);
       if (data?.comment?._id) {
         onSuccess?.(data.comment);
       }
@@ -83,6 +112,13 @@ export default function CommentForm({
       return;
     }
 
+    if (response.status === 429) {
+      setErrorMessage(labels.rateLimitMessage || labels.errorMessage || "");
+      setStatus("error");
+      return;
+    }
+
+    setErrorMessage(labels.errorMessage || "");
     setStatus("error");
   };
 
@@ -100,17 +136,6 @@ export default function CommentForm({
           onChange={handleChange}
           placeholder={labels.namePlaceholder}
           required
-        />
-      </div>
-      <div className="grid gap-2 text-left">
-        <label className="text-sm font-medium">{labels.emailLabel}</label>
-        <input
-          className="h-11 rounded-xl border border-border/70 bg-background px-3 text-sm"
-          name="email"
-          type="email"
-          value={form.email}
-          onChange={handleChange}
-          placeholder={labels.emailPlaceholder}
         />
       </div>
       <div className="grid gap-2 text-left">
@@ -138,7 +163,7 @@ export default function CommentForm({
       </div>
       <button
         type="submit"
-        className="inline-flex h-11 items-center justify-center rounded-xl bg-foreground text-sm font-semibold text-background transition hover:opacity-90 disabled:opacity-60"
+        className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-foreground text-sm font-semibold text-background transition hover:opacity-90 disabled:opacity-60 md:w-48"
         disabled={status === "loading"}
       >
         {labels.submitLabel}
@@ -147,7 +172,9 @@ export default function CommentForm({
         <p className="text-sm text-emerald-600">{labels.successMessage}</p>
       ) : null}
       {status === "error" ? (
-        <p className="text-sm text-red-500">{labels.errorMessage}</p>
+        <p className="text-sm text-red-500">
+          {errorMessage || labels.errorMessage}
+        </p>
       ) : null}
     </form>
   );

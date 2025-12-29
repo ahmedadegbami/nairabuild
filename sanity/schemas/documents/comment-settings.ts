@@ -58,6 +58,81 @@ export default defineType({
       type: "string",
     }),
     defineField({
+      name: "commentSignInTitle",
+      title: "Sign-In Title",
+      type: "string",
+    }),
+    defineField({
+      name: "commentSignInHelper",
+      title: "Sign-In Helper Text",
+      type: "string",
+    }),
+    defineField({
+      name: "commentSignInButtonLabel",
+      title: "Sign-In Button Label",
+      type: "string",
+    }),
+    defineField({
+      name: "commentSignInSentMessage",
+      title: "Sign-In Sent Message",
+      type: "string",
+    }),
+    defineField({
+      name: "commentSignInErrorMessage",
+      title: "Sign-In Error Message",
+      type: "string",
+    }),
+    defineField({
+      name: "commentSignOutLabel",
+      title: "Sign Out Label",
+      type: "string",
+    }),
+    defineField({
+      name: "commentLeaveLabel",
+      title: "Leave Comment Label",
+      type: "string",
+    }),
+    defineField({
+      name: "commentReplyLabel",
+      title: "Reply Label",
+      type: "string",
+    }),
+    defineField({
+      name: "commentEditLabel",
+      title: "Edit Label",
+      type: "string",
+    }),
+    defineField({
+      name: "commentDeleteLabel",
+      title: "Delete Label",
+      type: "string",
+    }),
+    defineField({
+      name: "commentEditedLabel",
+      title: "Edited Label",
+      type: "string",
+    }),
+    defineField({
+      name: "commentDeletedLabel",
+      title: "Deleted Text",
+      type: "string",
+    }),
+    defineField({
+      name: "commentShowRepliesLabel",
+      title: "Show Replies Label",
+      type: "string",
+    }),
+    defineField({
+      name: "commentHideRepliesLabel",
+      title: "Hide Replies Label",
+      type: "string",
+    }),
+    defineField({
+      name: "commentAuthorBadgeLabel",
+      title: "Author Badge Label",
+      type: "string",
+    }),
+    defineField({
       name: "commentSuccessMessage",
       title: "Comment Success Message",
       type: "string",
@@ -65,6 +140,11 @@ export default defineType({
     defineField({
       name: "commentErrorMessage",
       title: "Comment Error Message",
+      type: "string",
+    }),
+    defineField({
+      name: "commentRateLimitMessage",
+      title: "Comment Rate Limit Message",
       type: "string",
     }),
   ],
