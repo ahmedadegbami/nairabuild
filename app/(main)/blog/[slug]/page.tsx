@@ -199,14 +199,11 @@ export default async function PostPage({ params }: PageProps) {
         </section>
       ) : null}
       <section className="mx-auto w-full max-w-3xl">
-        <h2 className="text-xl font-semibold tracking-tight">
-          {commentSettings?.commentsTitle}
-        </h2>
         <CommentThread
           postId={post._id}
           comments={commentTree}
           labels={{
-            title: commentSettings?.commentFormTitle,
+            title: commentSettings?.commentsTitle,
             nameLabel: commentSettings?.commentNameLabel,
             namePlaceholder: commentSettings?.commentNamePlaceholder,
             emailLabel: commentSettings?.commentEmailLabel,

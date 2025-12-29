@@ -1,4 +1,7 @@
+import Image from "next/image";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
+import { urlFor } from "@/sanity/lib/image";
+import { dataset, projectId } from "@/sanity/env";
 
 const components: PortableTextComponents = {
   block: {
@@ -49,6 +52,94 @@ const components: PortableTextComponents = {
       </ol>
     ),
   },
+  types: {
+    image: ({ value }) => {
+      if (!value?.asset) {
+        return null;
+      }
+
+      const alt = value?.alt || "Post image";
+      const src = urlFor(value).width(1400).url();
+
+      return (
+        <div className="mt-6 overflow-hidden rounded-2xl border border-border/60 bg-muted">
+          <Image
+            src={src}
+            alt={alt}
+            width={1400}
+            height={900}
+            className="h-auto w-full object-cover"
+          />
+        </div>
+      );
+    },
+    videoFile: ({ value }) => {
+      const fileRef = value?.asset?._ref as string | undefined;
+      const url =
+        value?.asset?.url ||
+        (fileRef ? buildFileUrl(fileRef, projectId, dataset) : null);
+      if (!url) {
+        return null;
+      }
+
+      return (
+        <div className="mt-6 overflow-hidden rounded-2xl border border-border/60 bg-black">
+          <video className="w-full" controls preload="metadata">
+            <source src={url} />
+          </video>
+        </div>
+      );
+    },
+    youtube: ({ value }) => {
+      const url = value?.url as string | undefined;
+      if (!url) {
+        return null;
+      }
+
+      const videoId = extractYouTubeId(url);
+      if (!videoId) {
+        return (
+          <p className="mt-4 text-sm">
+            <a
+              href={url}
+              className="underline decoration-amber-400/80 underline-offset-4"
+            >
+              {url}
+            </a>
+          </p>
+        );
+      }
+
+      return (
+        <div className="mt-6 overflow-hidden rounded-2xl border border-border/60 bg-black">
+          <iframe
+            className="aspect-video w-full"
+            src={`https://www.youtube-nocookie.com/embed/${videoId}`}
+            title="YouTube video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      );
+    },
+  },
+};
+
+const buildFileUrl = (ref: string, projId: string, dataSet: string) => {
+  const match = ref.match(/^file-([^-]+)-([a-z0-9]+)$/i);
+  if (!match) {
+    return null;
+  }
+
+  const [, assetId, extension] = match;
+  return `https://cdn.sanity.io/files/${projId}/${dataSet}/${assetId}.${extension}`;
+};
+
+const extractYouTubeId = (url: string) => {
+  const idMatch = url.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/
+  );
+  return idMatch?.[1] || null;
 };
 
 export default function PortableTextRenderer({ value }: { value: any }) {

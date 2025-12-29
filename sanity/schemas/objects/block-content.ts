@@ -1,4 +1,6 @@
 import { defineType } from "sanity";
+import YouTubePreview from "@/sanity/schemas/previews/youtube-preview";
+import VideoPreview from "@/sanity/schemas/previews/video-preview";
 
 export default defineType({
   name: "blockContent",
@@ -39,6 +41,52 @@ export default defineType({
             ],
           },
         ],
+      },
+    },
+    {
+      type: "image",
+      fields: [
+        {
+          name: "alt",
+          type: "string",
+          title: "Alternative Text",
+        },
+      ],
+    },
+    {
+      type: "file",
+      name: "videoFile",
+      title: "Video File",
+      options: {
+        accept: "video/*",
+      },
+      preview: {
+        select: {
+          asset: "asset",
+        },
+      },
+      components: {
+        preview: VideoPreview,
+      },
+    },
+    {
+      type: "object",
+      name: "youtube",
+      title: "YouTube",
+      fields: [
+        {
+          name: "url",
+          type: "url",
+          title: "YouTube URL",
+        },
+      ],
+      preview: {
+        select: {
+          url: "url",
+        },
+      },
+      components: {
+        preview: YouTubePreview,
       },
     },
   ],
