@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PortableTextRenderer from "@/components/portable-text";
-import CommentForm from "@/components/comments/comment-form";
+import CommentThread from "@/components/comments/thread";
 import {
   fetchBlogSettings,
   fetchCommentSettings,
@@ -50,7 +50,7 @@ const buildCommentTree = (comments: any[]): CommentNode[] => {
 
   comments.forEach((comment) => {
     const node = map.get(comment._id);
-    const parentId = comment.parent?._id;
+    const parentId = comment.parentId;
 
     if (node && parentId && map.has(parentId)) {
       map.get(parentId)?.replies.push(node);
@@ -161,7 +161,7 @@ export default async function PostPage({ params }: PageProps) {
               <Link
                 key={related._id}
                 href={`/blog/${related.slug?.current}`}
-                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-background shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                className="group flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-background shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
               >
                 <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
                   {related.mainImage ? (
@@ -178,7 +178,7 @@ export default async function PostPage({ params }: PageProps) {
                     <div className="h-full w-full bg-[linear-gradient(120deg,_rgba(15,23,42,0.04),_rgba(15,23,42,0.12))]" />
                   )}
                 </div>
-                <div className="flex h-full flex-col gap-3 px-5 py-5">
+                <div className="flex flex-col gap-3 px-5 py-5">
                   <div className="flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
                     {related.categories?.map((category) => (
                       <span key={category._id}>{category.title}</span>
@@ -198,43 +198,13 @@ export default async function PostPage({ params }: PageProps) {
           </div>
         </section>
       ) : null}
-
       <section className="mx-auto w-full max-w-3xl">
         <h2 className="text-xl font-semibold tracking-tight">
           {commentSettings?.commentsTitle}
         </h2>
-        <div className="mt-6 flex flex-col gap-6">
-          {commentTree.length ? (
-            commentTree.map((comment) => (
-              <div key={comment._id} className="rounded-2xl border border-border/60 p-5">
-                <div className="text-sm font-semibold">{comment.name}</div>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {comment.body}
-                </p>
-                {comment.replies.length ? (
-                  <div className="mt-4 space-y-4 border-l pl-4">
-                    {comment.replies.map((reply) => (
-                      <div key={reply._id}>
-                        <div className="text-sm font-semibold">
-                          {reply.name}
-                        </div>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          {reply.body}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            ))
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              {commentSettings?.commentsEmptyText}
-            </p>
-          )}
-        </div>
-        <CommentForm
+        <CommentThread
           postId={post._id}
+          comments={commentTree}
           labels={{
             title: commentSettings?.commentFormTitle,
             nameLabel: commentSettings?.commentNameLabel,
@@ -247,6 +217,7 @@ export default async function PostPage({ params }: PageProps) {
             successMessage: commentSettings?.commentSuccessMessage,
             errorMessage: commentSettings?.commentErrorMessage,
           }}
+          emptyText={commentSettings?.commentsEmptyText}
         />
       </section>
     </div>

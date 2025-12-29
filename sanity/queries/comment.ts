@@ -5,5 +5,5 @@ export const COMMENTS_BY_POST_QUERY = groq`*[_type == "comment" && post._ref == 
   name,
   body,
   createdAt,
-  parent->{_id}
+  "parentId": parent._ref
 }`;

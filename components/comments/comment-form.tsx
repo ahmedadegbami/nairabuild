@@ -19,9 +19,24 @@ type CommentFormLabels = {
 type CommentFormProps = {
   postId: string;
   labels: CommentFormLabels;
+  parentId?: string;
+  showTitle?: boolean;
+  onSuccess?: (comment: {
+    _id: string;
+    name: string;
+    body: string;
+    createdAt?: string;
+    parentId?: string | null;
+  }) => void;
 };
 
-export default function CommentForm({ postId, labels }: CommentFormProps) {
+export default function CommentForm({
+  postId,
+  labels,
+  parentId,
+  showTitle = true,
+  onSuccess,
+}: CommentFormProps) {
   const router = useRouter();
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
     "idle"
@@ -49,6 +64,7 @@ export default function CommentForm({ postId, labels }: CommentFormProps) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         postId,
+        parentId,
         name: form.name.trim(),
         email: form.email.trim(),
         body: form.body.trim(),
@@ -57,8 +73,12 @@ export default function CommentForm({ postId, labels }: CommentFormProps) {
     });
 
     if (response.ok) {
+      const data = await response.json();
       setForm({ name: "", email: "", body: "", website: "" });
       setStatus("success");
+      if (data?.comment?._id) {
+        onSuccess?.(data.comment);
+      }
       router.refresh();
       return;
     }
@@ -68,7 +88,7 @@ export default function CommentForm({ postId, labels }: CommentFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
-      {labels.title ? (
+      {showTitle && labels.title ? (
         <h3 className="text-lg font-semibold">{labels.title}</h3>
       ) : null}
       <div className="grid gap-2 text-left">
