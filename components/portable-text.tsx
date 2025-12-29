@@ -2,6 +2,7 @@ import Image from "next/image";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import { urlFor } from "@/sanity/lib/image";
 import { dataset, projectId } from "@/sanity/env";
+import YouTubeConsentEmbed from "@/components/youtube-consent-embed";
 
 const components: PortableTextComponents = {
   block: {
@@ -110,17 +111,7 @@ const components: PortableTextComponents = {
         );
       }
 
-      return (
-        <div className="mt-6 overflow-hidden rounded-2xl border border-border/60 bg-black">
-          <iframe
-            className="aspect-video w-full"
-            src={`https://www.youtube-nocookie.com/embed/${videoId}`}
-            title="YouTube video"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
-      );
+      return <YouTubeConsentEmbed videoId={videoId} url={url} />;
     },
   },
 };
