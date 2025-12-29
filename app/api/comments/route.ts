@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     doc.parent = { _type: "reference", _ref: parentId };
   }
 
-  const created = await writeClient.create(doc);
+  const created = await writeClient.create(doc as { _type: string });
 
   return NextResponse.json({
     ok: true,

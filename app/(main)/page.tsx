@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -5,12 +6,30 @@ import {
   fetchHomeSettings,
   fetchPosts,
   fetchPostsByCategory,
+  fetchSiteSettings,
 } from "@/sanity/lib/fetch";
 import { urlFor } from "@/sanity/lib/image";
 
 type PageProps = {
   searchParams?: Promise<{ category?: string }>;
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const [settings, siteSettings] = await Promise.all([
+    fetchHomeSettings(),
+    fetchSiteSettings(),
+  ]);
+
+  const title = settings?.homeIntroTitle || siteSettings?.siteName || "Home";
+  const description =
+    settings?.homeIntroSubtitle ||
+    "Stories across construction, engineering, and technology.";
+
+  return {
+    title,
+    description,
+  };
+}
 
 export default async function IndexPage({ searchParams }: PageProps) {
   const params = (await searchParams) || {};

@@ -48,7 +48,7 @@ export default function CommentThread({
 
   const insertComment = (
     items: CommentNode[],
-    comment: CommentNode & { parentId?: string | null }
+    comment: Omit<CommentNode, "replies"> & { parentId?: string | null }
   ): CommentNode[] => {
     if (!comment.parentId) {
       return [...items, { ...comment, replies: [] }];

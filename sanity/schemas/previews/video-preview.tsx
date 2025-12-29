@@ -1,22 +1,21 @@
 import React from "react";
 import { dataset, projectId } from "@/sanity/env";
 
-type VideoPreviewProps = {
-  value?: {
-    asset?: {
-      _ref?: string;
-      url?: string;
-    };
-    url?: string;
-  };
+type VideoPreviewValue = {
   asset?: {
     _ref?: string;
     url?: string;
   };
+  url?: string;
+};
+
+type VideoPreviewProps = {
+  value?: VideoPreviewValue;
+  asset?: VideoPreviewValue["asset"];
 };
 
 export default function VideoPreview(props: VideoPreviewProps) {
-  const value = props.value ?? props;
+  const value: VideoPreviewValue | undefined = props.value;
   const asset = value?.asset ?? props.asset;
   const fileRef = asset?._ref as string | undefined;
   const url =

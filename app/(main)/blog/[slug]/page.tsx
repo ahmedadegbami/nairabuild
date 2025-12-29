@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -10,6 +11,7 @@ import {
   fetchPostBySlug,
   fetchPostsExcept,
   fetchRelatedPosts,
+  fetchSiteSettings,
 } from "@/sanity/lib/fetch";
 import { urlFor } from "@/sanity/lib/image";
 
@@ -64,6 +66,52 @@ const buildCommentTree = (comments: any[]): CommentNode[] => {
 
   return roots;
 };
+
+const toPlainText = (value: any) => {
+  if (!Array.isArray(value)) return "";
+  return value
+    .filter((block) => block?._type === "block")
+    .map((block) =>
+      (block?.children || [])
+        .map((child: { text?: string }) => child.text || "")
+        .join("")
+    )
+    .join(" ");
+};
+
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const { slug } = await props.params;
+  const [post, siteSettings] = await Promise.all([
+    fetchPostBySlug(slug),
+    fetchSiteSettings(),
+  ]);
+
+  if (!post) {
+    return {};
+  }
+
+  const title = post.title || siteSettings?.siteName || "Post";
+  const description = post.excerpt || toPlainText(post.body);
+  const imageUrl = post.mainImage
+    ? urlFor(post.mainImage).width(1200).height(630).url()
+    : undefined;
+
+  return {
+    title,
+    description,
+    openGraph: imageUrl
+      ? {
+          images: [
+            {
+              url: imageUrl,
+              width: 1200,
+              height: 630,
+            },
+          ],
+        }
+      : undefined,
+  };
+}
 
 export default async function PostPage({ params }: PageProps) {
   const { slug } = await params;

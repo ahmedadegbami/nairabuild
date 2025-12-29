@@ -229,7 +229,6 @@ export const fetchCommentsByPostId = async (
   const { data } = await sanityFetch({
     query: COMMENTS_BY_POST_QUERY,
     params: { postId },
-    cache: "no-store",
   });
 
   return data ?? [];

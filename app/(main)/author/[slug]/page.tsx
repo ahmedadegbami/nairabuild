@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   fetchAuthorBySlug,
   fetchPostsByAuthor,
+  fetchSiteSettings,
 } from "@/sanity/lib/fetch";
 import { urlFor } from "@/sanity/lib/image";
 import PortableTextRenderer from "@/components/portable-text";
@@ -11,6 +13,38 @@ import PortableTextRenderer from "@/components/portable-text";
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
+
+const toPlainText = (value: any) => {
+  if (!Array.isArray(value)) return "";
+  return value
+    .filter((block) => block?._type === "block")
+    .map((block) =>
+      (block?.children || [])
+        .map((child: { text?: string }) => child.text || "")
+        .join("")
+    )
+    .join(" ");
+};
+
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const { slug } = await props.params;
+  const [author, siteSettings] = await Promise.all([
+    fetchAuthorBySlug(slug),
+    fetchSiteSettings(),
+  ]);
+
+  if (!author) {
+    return {};
+  }
+
+  const title = `${author.name || "Author"} | ${siteSettings?.siteName || "Blog"}`;
+  const description = toPlainText(author.bio);
+
+  return {
+    title,
+    description,
+  };
+}
 
 export default async function AuthorPage({ params }: PageProps) {
   const { slug } = await params;

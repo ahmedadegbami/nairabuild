@@ -1,6 +1,28 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PortableTextRenderer from "@/components/portable-text";
-import { fetchAuthorGuide } from "@/sanity/lib/fetch";
+import { fetchAuthorGuide, fetchSiteSettings } from "@/sanity/lib/fetch";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const [guide, siteSettings] = await Promise.all([
+    fetchAuthorGuide(),
+    fetchSiteSettings(),
+  ]);
+
+  if (!guide) {
+    return {};
+  }
+
+  const title = `${guide.title || "Share a topic"} | ${
+    siteSettings?.siteName || "Blog"
+  }`;
+  const description = guide.subtitle || "Share your idea for a new post.";
+
+  return {
+    title,
+    description,
+  };
+}
 
 export default async function ShareTopicPage() {
   const guide = await fetchAuthorGuide();
