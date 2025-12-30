@@ -204,7 +204,7 @@ export default async function IndexPage({ searchParams }: PageProps) {
               </h2>
               <PostsSearch initialQuery={searchQuery} category={selectedCategory} />
             </div>
-            <div className="mt-6 min-h-[620px]">
+            <div className="mt-6 min-h-[420px]">
               {posts.length ? (
                 <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                   {posts.map((post) => (
@@ -252,7 +252,7 @@ export default async function IndexPage({ searchParams }: PageProps) {
                 </div>
               )}
             </div>
-            <div className="mt-8 flex min-h-[52px] flex-wrap items-center justify-center gap-2">
+            <div className="mt-4 flex min-h-[52px] flex-wrap items-center justify-center gap-2">
               {totalPages > 1 ? (
                 <>
                   <Link
