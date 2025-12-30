@@ -9,6 +9,7 @@ import {
 } from "@/sanity/lib/fetch";
 import { urlFor } from "@/sanity/lib/image";
 import PostsSearch from "@/components/posts-search";
+import ScrollToHash from "@/components/scroll-to-hash";
 
 const POSTS_PER_PAGE = 3;
 
@@ -47,6 +48,18 @@ export default async function IndexPage({ searchParams }: PageProps) {
     perPage: POSTS_PER_PAGE,
   });
   const totalPages = Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
+  const paginationPages = (() => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+    const pages = new Set<number>([1, totalPages]);
+    const start = Math.max(2, currentPage - 2);
+    const end = Math.min(totalPages - 1, currentPage + 2);
+    for (let page = start; page <= end; page += 1) {
+      pages.add(page);
+    }
+    return Array.from(pages).sort((a, b) => a - b);
+  })();
   const buildPageHref = (page: number) => {
     const query = new URLSearchParams();
     if (selectedCategory) query.set("category", selectedCategory);
@@ -65,6 +78,7 @@ export default async function IndexPage({ searchParams }: PageProps) {
 
   return (
     <main className="relative overflow-hidden">
+      <ScrollToHash />
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,_rgba(34,197,94,0.18),_transparent_70%)] blur-3xl" />
         <div className="absolute bottom-0 right-10 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.12),_transparent_70%)] blur-3xl" />
@@ -171,7 +185,6 @@ export default async function IndexPage({ searchParams }: PageProps) {
             <div className="mt-4 flex flex-wrap gap-2">
               <Link
                 href={categoryHref()}
-                scroll={false}
                 className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-widest ${
                   !selectedCategory
                     ? "border-foreground bg-foreground text-background"
@@ -184,7 +197,6 @@ export default async function IndexPage({ searchParams }: PageProps) {
                 <Link
                   key={category._id}
                   href={categoryHref(category.slug?.current)}
-                  scroll={false}
                   className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-widest ${
                     selectedCategory === category.slug?.current
                       ? "border-foreground bg-foreground text-background"
@@ -257,7 +269,6 @@ export default async function IndexPage({ searchParams }: PageProps) {
                 <>
                   <Link
                     href={buildPageHref(Math.max(1, currentPage - 1))}
-                    scroll={false}
                     className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-widest ${
                       currentPage === 1
                         ? "pointer-events-none border-border text-foreground/40"
@@ -266,26 +277,31 @@ export default async function IndexPage({ searchParams }: PageProps) {
                   >
                     Prev
                   </Link>
-                  {Array.from(
-                    { length: totalPages },
-                    (_, index) => index + 1
-                  ).map((page) => (
-                    <Link
-                      key={page}
-                      href={buildPageHref(page)}
-                      scroll={false}
-                      className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-widest ${
-                        currentPage === page
-                          ? "border-foreground bg-foreground text-background"
-                          : "border-border text-foreground/70 hover:bg-muted"
-                      }`}
-                    >
-                      {page}
-                    </Link>
-                  ))}
+                  {paginationPages.map((page, index) => {
+                    const prev = paginationPages[index - 1];
+                    const showEllipsis = prev && page - prev > 1;
+                    return (
+                      <span key={`page-${page}`} className="flex items-center gap-2">
+                        {showEllipsis ? (
+                          <span className="px-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                            ...
+                          </span>
+                        ) : null}
+                        <Link
+                          href={buildPageHref(page)}
+                          className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-widest ${
+                            currentPage === page
+                              ? "border-foreground bg-foreground text-background"
+                              : "border-border text-foreground/70 hover:bg-muted"
+                          }`}
+                        >
+                          {page}
+                        </Link>
+                      </span>
+                    );
+                  })}
                   <Link
                     href={buildPageHref(Math.min(totalPages, currentPage + 1))}
-                    scroll={false}
                     className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-widest ${
                       currentPage === totalPages
                         ? "pointer-events-none border-border text-foreground/40"

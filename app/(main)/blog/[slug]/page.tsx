@@ -168,6 +168,12 @@ export default async function PostPage({ params }: PageProps) {
   ].slice(0, 2);
 
   const commentTree = buildCommentTree(comments);
+  const categoryHref = (slug?: string) => {
+    const query = new URLSearchParams();
+    if (slug) query.set("category", slug);
+    const queryString = query.toString();
+    return `/${queryString ? `?${queryString}` : ""}#latest-posts`;
+  };
 
   return (
     <div className="container flex flex-col gap-16 py-12">
@@ -186,7 +192,7 @@ export default async function PostPage({ params }: PageProps) {
             category.slug?.current ? (
               <Link
                 key={category._id}
-                href={`/?category=${category.slug.current}#latest-posts`}
+                href={categoryHref(category.slug.current)}
                 className="transition hover:text-foreground"
               >
                 {category.title}

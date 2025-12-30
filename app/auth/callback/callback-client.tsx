@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function AuthCallbackClient() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<"loading" | "error">("loading");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -19,12 +18,16 @@ export default function AuthCallbackClient() {
 
     const code = searchParams.get("code");
     const nextPath = searchParams.get("next") ?? "/";
+    const safeNextPath = nextPath.startsWith("/") ? nextPath : "/";
+    const navigateToNext = () => {
+      window.location.assign(safeNextPath);
+    };
 
     supabase.auth
       .getSession()
       .then(({ data }) => {
         if (data.session) {
-          router.replace(nextPath);
+          navigateToNext();
           return;
         }
 
@@ -42,7 +45,7 @@ export default function AuthCallbackClient() {
               setStatus("error");
               return;
             }
-            router.replace(nextPath);
+            navigateToNext();
           })
           .catch((err) => {
             setErrorMessage(err?.message || "Unknown error");
@@ -53,7 +56,7 @@ export default function AuthCallbackClient() {
         setErrorMessage(err?.message || "Unknown error");
         setStatus("error");
       });
-  }, [router, searchParams]);
+  }, [searchParams]);
 
   if (status !== "error") {
     return null;
