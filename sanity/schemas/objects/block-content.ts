@@ -67,6 +67,16 @@ export default defineType({
           type: "string",
           title: "Alternative Text",
         },
+        {
+          name: "credit",
+          type: "string",
+          title: "Credit",
+        },
+        {
+          name: "creditUrl",
+          type: "url",
+          title: "Credit URL",
+        },
       ],
     },
     {
@@ -76,6 +86,18 @@ export default defineType({
       options: {
         accept: "video/*",
       },
+      fields: [
+        {
+          name: "credit",
+          type: "string",
+          title: "Credit",
+        },
+        {
+          name: "creditUrl",
+          type: "url",
+          title: "Credit URL",
+        },
+      ],
       preview: {
         select: {
           asset: "asset",
@@ -94,6 +116,16 @@ export default defineType({
           name: "url",
           type: "url",
           title: "YouTube URL",
+        },
+        {
+          name: "credit",
+          type: "string",
+          title: "Credit",
+        },
+        {
+          name: "creditUrl",
+          type: "url",
+          title: "Credit URL",
         },
       ],
       preview: {

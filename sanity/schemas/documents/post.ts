@@ -38,6 +38,18 @@ export default defineType({
       },
     }),
     defineField({
+      name: "imageCredit",
+      title: "Image Credit",
+      type: "string",
+      description: "Attribution text for the main image (source, photographer).",
+    }),
+    defineField({
+      name: "imageCreditUrl",
+      title: "Image Credit URL",
+      type: "url",
+      description: "Optional link to the source or license.",
+    }),
+    defineField({
       name: "author",
       title: "Author",
       type: "reference",

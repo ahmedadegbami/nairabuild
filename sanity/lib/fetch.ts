@@ -31,6 +31,8 @@ export type Post = {
   slug?: { current: string };
   excerpt?: string;
   publishedAt?: string;
+  imageCredit?: string;
+  imageCreditUrl?: string;
   mainImage?: any;
   categories?: Category[];
   author?: {
@@ -66,6 +68,8 @@ export type HomeSettings = {
 export type BlogSettings = {
   backToPostsLabel?: string;
   relatedPostsTitle?: string;
+  imageCreditLabel?: string;
+  mediaCreditLabel?: string;
 };
 
 export type CommentSettings = {

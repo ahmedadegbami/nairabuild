@@ -17,6 +17,20 @@ export default defineType({
       title: "Related Posts Title",
       type: "string",
     }),
+    defineField({
+      name: "imageCreditLabel",
+      title: "Image Credit Label",
+      type: "string",
+      description: "Label shown above or beside the main image credit.",
+      initialValue: "Image credit",
+    }),
+    defineField({
+      name: "mediaCreditLabel",
+      title: "Media Credit Label",
+      type: "string",
+      description: "Label shown beside image/video credits inside post bodies.",
+      initialValue: "Credit",
+    }),
   ],
   preview: {
     prepare() {

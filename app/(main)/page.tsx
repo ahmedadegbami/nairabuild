@@ -48,6 +48,11 @@ export default async function IndexPage({ searchParams }: PageProps) {
     perPage: POSTS_PER_PAGE,
   });
   const totalPages = Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
+  const primaryCtaHref = settings?.homeIntroPrimaryCtaUrl?.trim();
+  const resolvedPrimaryCtaHref =
+    primaryCtaHref === "/" || primaryCtaHref === "#latest-posts"
+      ? "/#latest-posts"
+      : primaryCtaHref;
   const paginationPages = (() => {
     if (totalPages <= 7) {
       return Array.from({ length: totalPages }, (_, index) => index + 1);
@@ -103,10 +108,9 @@ export default async function IndexPage({ searchParams }: PageProps) {
               </p>
             ) : null}
             <div className="flex flex-wrap items-center gap-3">
-              {settings?.homeIntroPrimaryCtaLabel &&
-              settings?.homeIntroPrimaryCtaUrl ? (
+              {settings?.homeIntroPrimaryCtaLabel && resolvedPrimaryCtaHref ? (
                 <Link
-                  href={settings.homeIntroPrimaryCtaUrl}
+                  href={resolvedPrimaryCtaHref}
                   className="inline-flex h-11 items-center justify-center rounded-full bg-foreground px-6 text-sm font-semibold text-background transition hover:opacity-90"
                 >
                   {settings.homeIntroPrimaryCtaLabel}

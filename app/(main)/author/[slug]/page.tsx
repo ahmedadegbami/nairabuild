@@ -9,6 +9,7 @@ import {
 } from "@/sanity/lib/fetch";
 import { urlFor } from "@/sanity/lib/image";
 import PortableTextRenderer from "@/components/portable-text";
+import { getInitials } from "@/lib/initials";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -55,6 +56,7 @@ export default async function AuthorPage({ params }: PageProps) {
   }
 
   const posts = await fetchPostsByAuthor(slug);
+  const authorInitials = getInitials(author.name, "A");
 
   return (
     <main className="container py-12">
@@ -70,7 +72,11 @@ export default async function AuthorPage({ params }: PageProps) {
                 className="h-auto max-h-[240px] w-auto object-contain"
               />
             </div>
-          ) : null}
+          ) : (
+            <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full border border-border/60 bg-muted text-3xl font-semibold uppercase text-foreground">
+              {authorInitials}
+            </div>
+          )}
           <div className="flex flex-col gap-3 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
               {author.name}

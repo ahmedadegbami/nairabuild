@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PortableTextRenderer from "@/components/portable-text";
+import { getInitials } from "@/lib/initials";
 import CommentThread from "@/components/comments/thread";
 import {
   fetchBlogSettings,
@@ -168,6 +169,7 @@ export default async function PostPage({ params }: PageProps) {
   ].slice(0, 2);
 
   const commentTree = buildCommentTree(comments);
+  const authorInitials = getInitials(post.author?.name, "A");
   const categoryHref = (slug?: string) => {
     const query = new URLSearchParams();
     if (slug) query.set("category", slug);
@@ -216,7 +218,11 @@ export default async function PostPage({ params }: PageProps) {
                   className="object-cover"
                 />
               </div>
-            ) : null}
+            ) : (
+              <div className="flex h-7 w-7 items-center justify-center rounded-full border border-border/60 bg-muted text-[10px] font-semibold uppercase text-foreground">
+                {authorInitials}
+              </div>
+            )}
             <Link
               href={`/author/${post.author.slug?.current}`}
               className="font-semibold text-foreground underline decoration-emerald-400/80 underline-offset-4"
@@ -226,20 +232,44 @@ export default async function PostPage({ params }: PageProps) {
           </div>
         ) : null}
         {post.mainImage ? (
-          <div className="mx-auto w-fit max-w-full overflow-hidden rounded-3xl border border-border/60 bg-muted">
-            <Image
-              src={urlFor(post.mainImage).width(1600).url()}
-              alt={post.title}
-              width={post.mainImage?.asset?.metadata?.dimensions?.width || 1200}
-              height={
-                post.mainImage?.asset?.metadata?.dimensions?.height || 800
-              }
-              className="mx-auto h-auto max-h-[520px] w-auto max-w-full object-contain"
-              sizes="(min-width: 1024px) 768px, 100vw"
-            />
-          </div>
+          <figure className="mx-auto w-fit max-w-full">
+            <div className="overflow-hidden rounded-3xl border border-border/60 bg-muted">
+              <Image
+                src={urlFor(post.mainImage).width(1600).url()}
+                alt={post.title}
+                width={post.mainImage?.asset?.metadata?.dimensions?.width || 1200}
+                height={
+                  post.mainImage?.asset?.metadata?.dimensions?.height || 800
+                }
+                className="mx-auto h-auto max-h-[520px] w-auto max-w-full object-contain"
+                sizes="(min-width: 1024px) 768px, 100vw"
+              />
+            </div>
+            {post.imageCredit ? (
+              <figcaption className="mt-2 text-xs text-muted-foreground">
+                {blogSettings?.imageCreditLabel
+                  ? `${blogSettings.imageCreditLabel}: `
+                  : ""}
+                {post.imageCreditUrl ? (
+                  <a
+                    href={post.imageCreditUrl}
+                    className="underline decoration-emerald-400/80 underline-offset-4"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    {post.imageCredit}
+                  </a>
+                ) : (
+                  <span>{post.imageCredit}</span>
+                )}
+              </figcaption>
+            ) : null}
+          </figure>
         ) : null}
-        <PortableTextRenderer value={post.body} />
+        <PortableTextRenderer
+          value={post.body}
+          creditLabel={blogSettings?.mediaCreditLabel}
+        />
       </article>
 
       {filledRelated.length ? (

@@ -4,7 +4,7 @@ import { urlFor } from "@/sanity/lib/image";
 import { dataset, projectId } from "@/sanity/env";
 import YouTubeConsentEmbed from "@/components/youtube-consent-embed";
 
-const components: PortableTextComponents = {
+const buildComponents = (creditLabel?: string): PortableTextComponents => ({
   block: {
     h2: ({ children }) => (
       <h2 className="mt-10 text-2xl font-semibold tracking-tight">
@@ -68,17 +68,38 @@ const components: PortableTextComponents = {
 
       const alt = value?.alt || "Post image";
       const src = urlFor(value).width(1400).url();
+      const credit = value?.credit as string | undefined;
+      const creditUrl = value?.creditUrl as string | undefined;
 
       return (
-        <div className="mt-6 overflow-hidden rounded-2xl border border-border/60 bg-muted">
-          <Image
-            src={src}
-            alt={alt}
-            width={1400}
-            height={900}
-            className="h-auto w-full object-cover"
-          />
-        </div>
+        <figure className="mt-6">
+          <div className="overflow-hidden rounded-2xl border border-border/60 bg-muted">
+            <Image
+              src={src}
+              alt={alt}
+              width={1400}
+              height={900}
+              className="h-auto w-full object-cover"
+            />
+          </div>
+          {credit ? (
+            <figcaption className="mt-2 text-xs text-muted-foreground">
+              {creditLabel ? `${creditLabel}: ` : ""}
+              {creditUrl ? (
+                <a
+                  href={creditUrl}
+                  className="underline decoration-amber-400/80 underline-offset-4"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {credit}
+                </a>
+              ) : (
+                <span>{credit}</span>
+              )}
+            </figcaption>
+          ) : null}
+        </figure>
       );
     },
     videoFile: ({ value }) => {
@@ -89,13 +110,34 @@ const components: PortableTextComponents = {
       if (!url) {
         return null;
       }
+      const credit = value?.credit as string | undefined;
+      const creditUrl = value?.creditUrl as string | undefined;
 
       return (
-        <div className="mt-6 overflow-hidden rounded-2xl border border-border/60 bg-black">
-          <video className="w-full" controls preload="metadata">
-            <source src={url} />
-          </video>
-        </div>
+        <figure className="mt-6">
+          <div className="overflow-hidden rounded-2xl border border-border/60 bg-black">
+            <video className="w-full" controls preload="metadata">
+              <source src={url} />
+            </video>
+          </div>
+          {credit ? (
+            <figcaption className="mt-2 text-xs text-muted-foreground">
+              {creditLabel ? `${creditLabel}: ` : ""}
+              {creditUrl ? (
+                <a
+                  href={creditUrl}
+                  className="underline decoration-amber-400/80 underline-offset-4"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {credit}
+                </a>
+              ) : (
+                <span>{credit}</span>
+              )}
+            </figcaption>
+          ) : null}
+        </figure>
       );
     },
     youtube: ({ value }) => {
@@ -103,25 +145,67 @@ const components: PortableTextComponents = {
       if (!url) {
         return null;
       }
+      const credit = value?.credit as string | undefined;
+      const creditUrl = value?.creditUrl as string | undefined;
 
       const videoId = extractYouTubeId(url);
       if (!videoId) {
         return (
-          <p className="mt-4 text-sm">
-            <a
-              href={url}
-              className="underline decoration-amber-400/80 underline-offset-4"
-            >
-              {url}
-            </a>
-          </p>
+          <figure className="mt-4">
+            <p className="text-sm">
+              <a
+                href={url}
+                className="underline decoration-amber-400/80 underline-offset-4"
+              >
+                {url}
+              </a>
+            </p>
+            {credit ? (
+              <figcaption className="mt-2 text-xs text-muted-foreground">
+                {creditLabel ? `${creditLabel}: ` : ""}
+                {creditUrl ? (
+                  <a
+                    href={creditUrl}
+                    className="underline decoration-amber-400/80 underline-offset-4"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    {credit}
+                  </a>
+                ) : (
+                  <span>{credit}</span>
+                )}
+              </figcaption>
+            ) : null}
+          </figure>
         );
       }
 
-      return <YouTubeConsentEmbed videoId={videoId} url={url} />;
+      return (
+        <figure className="mt-6">
+          <YouTubeConsentEmbed videoId={videoId} url={url} />
+          {credit ? (
+            <figcaption className="mt-2 text-xs text-muted-foreground">
+              {creditLabel ? `${creditLabel}: ` : ""}
+              {creditUrl ? (
+                <a
+                  href={creditUrl}
+                  className="underline decoration-amber-400/80 underline-offset-4"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {credit}
+                </a>
+              ) : (
+                <span>{credit}</span>
+              )}
+            </figcaption>
+          ) : null}
+        </figure>
+      );
     },
   },
-};
+});
 
 const buildFileUrl = (ref: string, projId: string, dataSet: string) => {
   const match = ref.match(/^file-([^-]+)-([a-z0-9]+)$/i);
@@ -140,10 +224,16 @@ const extractYouTubeId = (url: string) => {
   return idMatch?.[1] || null;
 };
 
-export default function PortableTextRenderer({ value }: { value: any }) {
+export default function PortableTextRenderer({
+  value,
+  creditLabel,
+}: {
+  value: any;
+  creditLabel?: string;
+}) {
   if (!value) {
     return null;
   }
 
-  return <PortableText value={value} components={components} />;
+  return <PortableText value={value} components={buildComponents(creditLabel)} />;
 }
