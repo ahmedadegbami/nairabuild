@@ -10,6 +10,8 @@ import {
   POST_BY_SLUG_QUERY,
   POSTS_BY_AUTHOR_QUERY,
   POSTS_BY_CATEGORY_QUERY,
+  POSTS_COUNT_QUERY,
+  POSTS_PAGED_QUERY,
   POSTS_QUERY,
   POSTS_EXCEPT_QUERY,
   RELATED_POSTS_QUERY,
@@ -210,6 +212,36 @@ export const fetchPosts = async (): Promise<Post[]> => {
   });
 
   return data ?? [];
+};
+
+export const fetchPostsPaged = async ({
+  categorySlug,
+  search,
+  page,
+  perPage,
+}: {
+  categorySlug?: string;
+  search?: string;
+  page: number;
+  perPage: number;
+}): Promise<{ posts: Post[]; total: number }> => {
+  const searchTerm = search?.trim();
+  const searchParam = searchTerm ? `*${searchTerm}*` : "";
+  const start = Math.max(0, (page - 1) * perPage);
+  const end = start + perPage;
+
+  const [{ data: posts }, { data: total }] = await Promise.all([
+    sanityFetch({
+      query: POSTS_PAGED_QUERY,
+      params: { categorySlug: categorySlug || "", search: searchParam, start, end },
+    }),
+    sanityFetch({
+      query: POSTS_COUNT_QUERY,
+      params: { categorySlug: categorySlug || "", search: searchParam },
+    }),
+  ]);
+
+  return { posts: posts ?? [], total: total ?? 0 };
 };
 
 export const fetchPostsByCategory = async (

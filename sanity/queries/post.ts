@@ -18,6 +18,36 @@ export const POSTS_QUERY = groq`*[_type == "post" && defined(slug.current)] | or
   }
 }`;
 
+export const POSTS_PAGED_QUERY = groq`*[
+  _type == "post" &&
+  defined(slug.current) &&
+  (!defined($categorySlug) || $categorySlug == "" || $categorySlug in categories[]->slug.current) &&
+  (!defined($search) || $search == "" || title match $search || excerpt match $search)
+] | order(publishedAt desc)[$start...$end]{
+  _id,
+  title,
+  slug,
+  excerpt,
+  publishedAt,
+  mainImage,
+  categories[]->{
+    _id,
+    title,
+    slug
+  },
+  author->{
+    name,
+    image
+  }
+}`;
+
+export const POSTS_COUNT_QUERY = groq`count(*[
+  _type == "post" &&
+  defined(slug.current) &&
+  (!defined($categorySlug) || $categorySlug == "" || $categorySlug in categories[]->slug.current) &&
+  (!defined($search) || $search == "" || title match $search || excerpt match $search)
+])`;
+
 export const POSTS_BY_CATEGORY_QUERY = groq`*[_type == "post" && defined(slug.current) && $categorySlug in categories[]->slug.current] | order(publishedAt desc){
   _id,
   title,

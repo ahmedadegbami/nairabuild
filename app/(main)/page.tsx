@@ -4,14 +4,16 @@ import Link from "next/link";
 import {
   fetchCategories,
   fetchHomeSettings,
-  fetchPosts,
-  fetchPostsByCategory,
+  fetchPostsPaged,
   fetchSiteSettings,
 } from "@/sanity/lib/fetch";
 import { urlFor } from "@/sanity/lib/image";
+import PostsSearch from "@/components/posts-search";
+
+const POSTS_PER_PAGE = 3;
 
 type PageProps = {
-  searchParams?: Promise<{ category?: string }>;
+  searchParams?: Promise<{ category?: string; page?: string; q?: string }>;
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -34,11 +36,32 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function IndexPage({ searchParams }: PageProps) {
   const params = (await searchParams) || {};
   const selectedCategory = params.category || "";
+  const searchQuery = (params.q || "").trim();
+  const currentPage = Math.max(1, Number(params.page ?? "1") || 1);
   const settings = await fetchHomeSettings();
   const categories = await fetchCategories();
-  const posts = selectedCategory
-    ? await fetchPostsByCategory(selectedCategory)
-    : await fetchPosts();
+  const { posts, total } = await fetchPostsPaged({
+    categorySlug: selectedCategory,
+    search: searchQuery,
+    page: currentPage,
+    perPage: POSTS_PER_PAGE,
+  });
+  const totalPages = Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
+  const buildPageHref = (page: number) => {
+    const query = new URLSearchParams();
+    if (selectedCategory) query.set("category", selectedCategory);
+    if (searchQuery) query.set("q", searchQuery);
+    if (page > 1) query.set("page", String(page));
+    const queryString = query.toString();
+    return `/${queryString ? `?${queryString}` : ""}#latest-posts`;
+  };
+  const categoryHref = (slug?: string) => {
+    const query = new URLSearchParams();
+    if (slug) query.set("category", slug);
+    if (searchQuery) query.set("q", searchQuery);
+    const queryString = query.toString();
+    return `/${queryString ? `?${queryString}` : ""}#latest-posts`;
+  };
 
   return (
     <main className="relative overflow-hidden">
@@ -90,7 +113,10 @@ export default async function IndexPage({ searchParams }: PageProps) {
           {settings?.homeFeaturedPosts?.length ? (
             <div className="grid gap-6 lg:grid-cols-2">
               {settings.homeFeaturedPosts.map((featured, index) => (
-                <div key={featured._id} className="relative flex justify-center">
+                <div
+                  key={featured._id}
+                  className="relative flex justify-center"
+                >
                   {index === 0 ? (
                     <div className="absolute right-6 top-6 hidden h-24 w-24 rounded-full border border-emerald-200/60 bg-emerald-50/60 lg:block" />
                   ) : null}
@@ -143,28 +169,28 @@ export default async function IndexPage({ searchParams }: PageProps) {
               {settings?.categoriesTitle}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
-            <Link
-              href="/"
-              scroll={false}
-              className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-widest ${
-                !selectedCategory
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border text-foreground/70"
-              }`}
-            >
-              {settings?.allCategoriesLabel}
-            </Link>
-            {categories.map((category) => (
               <Link
-                key={category._id}
-                href={`/?category=${category.slug?.current}`}
+                href={categoryHref()}
                 scroll={false}
                 className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-widest ${
-                  selectedCategory === category.slug?.current
+                  !selectedCategory
                     ? "border-foreground bg-foreground text-background"
                     : "border-border text-foreground/70"
                 }`}
               >
+                {settings?.allCategoriesLabel}
+              </Link>
+              {categories.map((category) => (
+                <Link
+                  key={category._id}
+                  href={categoryHref(category.slug?.current)}
+                  scroll={false}
+                  className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-widest ${
+                    selectedCategory === category.slug?.current
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-border text-foreground/70"
+                  }`}
+                >
                   {category.title}
                 </Link>
               ))}
@@ -172,54 +198,105 @@ export default async function IndexPage({ searchParams }: PageProps) {
           </aside>
 
           <div>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-4">
               <h2 className="text-2xl font-semibold tracking-tight">
                 {settings?.postsTitle}
               </h2>
+              <PostsSearch initialQuery={searchQuery} category={selectedCategory} />
             </div>
-            {posts.length ? (
-              <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                {posts.map((post) => (
-                  <Link
-                    key={post._id}
-                    href={`/blog/${post.slug?.current}`}
-                    className="group flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-background shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-                  >
-                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
-                      {post.mainImage ? (
-                        <Image
-                          src={urlFor(post.mainImage).width(800).height(500).url()}
-                          alt={post.title}
-                          fill
-                          className="object-cover transition duration-500 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="h-full w-full bg-[linear-gradient(120deg,_rgba(15,23,42,0.04),_rgba(15,23,42,0.12))]" />
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-3 px-5 py-5">
-                      <div className="flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                        {post.categories?.map((category) => (
-                          <span key={category._id}>{category.title}</span>
-                        ))}
+            <div className="mt-6 min-h-[620px]">
+              {posts.length ? (
+                <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                  {posts.map((post) => (
+                    <Link
+                      key={post._id}
+                      href={`/blog/${post.slug?.current}`}
+                      className="group flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-background shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                    >
+                      <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+                        {post.mainImage ? (
+                          <Image
+                            src={urlFor(post.mainImage)
+                              .width(800)
+                              .height(500)
+                              .url()}
+                            alt={post.title}
+                            fill
+                            className="object-cover transition duration-500 group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className="h-full w-full bg-[linear-gradient(120deg,_rgba(15,23,42,0.04),_rgba(15,23,42,0.12))]" />
+                        )}
                       </div>
-                      <h3 className="text-base font-semibold tracking-tight">
-                        {post.title}
-                      </h3>
-                      {post.excerpt ? (
-                        <p className="text-sm text-muted-foreground line-clamp-4">
-                          {post.excerpt}
-                        </p>
-                      ) : null}
-                    </div>
+                      <div className="flex flex-col gap-3 px-5 py-5">
+                        <div className="flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                          {post.categories?.map((category) => (
+                            <span key={category._id}>{category.title}</span>
+                          ))}
+                        </div>
+                        <h3 className="text-base font-semibold tracking-tight">
+                          {post.title}
+                        </h3>
+                        {post.excerpt ? (
+                          <p className="text-sm text-muted-foreground line-clamp-4">
+                            {post.excerpt}
+                          </p>
+                        ) : null}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-3xl border border-dashed border-border/80 px-6 py-12 text-center text-sm text-muted-foreground">
+                  {settings?.emptyPostsText}
+                </div>
+              )}
+            </div>
+            <div className="mt-8 flex min-h-[52px] flex-wrap items-center justify-center gap-2">
+              {totalPages > 1 ? (
+                <>
+                  <Link
+                    href={buildPageHref(Math.max(1, currentPage - 1))}
+                    scroll={false}
+                    className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-widest ${
+                      currentPage === 1
+                        ? "pointer-events-none border-border text-foreground/40"
+                        : "border-border text-foreground/70 hover:bg-muted"
+                    }`}
+                  >
+                    Prev
                   </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="mt-10 rounded-3xl border border-dashed border-border/80 px-6 py-12 text-center text-sm text-muted-foreground">
-                {settings?.emptyPostsText}
-              </div>
-            )}
+                  {Array.from(
+                    { length: totalPages },
+                    (_, index) => index + 1
+                  ).map((page) => (
+                    <Link
+                      key={page}
+                      href={buildPageHref(page)}
+                      scroll={false}
+                      className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-widest ${
+                        currentPage === page
+                          ? "border-foreground bg-foreground text-background"
+                          : "border-border text-foreground/70 hover:bg-muted"
+                      }`}
+                    >
+                      {page}
+                    </Link>
+                  ))}
+                  <Link
+                    href={buildPageHref(Math.min(totalPages, currentPage + 1))}
+                    scroll={false}
+                    className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-widest ${
+                      currentPage === totalPages
+                        ? "pointer-events-none border-border text-foreground/40"
+                        : "border-border text-foreground/70 hover:bg-muted"
+                    }`}
+                  >
+                    Next
+                  </Link>
+                </>
+              ) : null}
+            </div>
           </div>
         </div>
       </section>
