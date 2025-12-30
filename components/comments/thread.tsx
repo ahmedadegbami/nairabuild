@@ -526,9 +526,7 @@ export default function CommentThread({
                     return;
                   }
                   const nextPath = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}#comments`;
-                  const siteUrl =
-                    process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
-                  const redirectTo = `${siteUrl}/auth/callback?next=${encodeURIComponent(
+                  const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
                     nextPath
                   )}`;
                   const { error } = await supabase.auth.signInWithOtp({

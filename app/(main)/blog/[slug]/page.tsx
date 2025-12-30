@@ -182,9 +182,19 @@ export default async function PostPage({ params }: PageProps) {
           {post.title}
         </h1>
         <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          {post.categories?.map((category) => (
-            <span key={category._id}>{category.title}</span>
-          ))}
+          {post.categories?.map((category) =>
+            category.slug?.current ? (
+              <Link
+                key={category._id}
+                href={`/?category=${category.slug.current}#latest-posts`}
+                className="transition hover:text-foreground"
+              >
+                {category.title}
+              </Link>
+            ) : (
+              <span key={category._id}>{category.title}</span>
+            )
+          )}
           {post.publishedAt ? (
             <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
           ) : null}

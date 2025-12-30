@@ -136,7 +136,7 @@ export default async function IndexPage({ searchParams }: PageProps) {
         </div>
       </section>
 
-      <section className="container relative pb-20">
+      <section id="latest-posts" className="container relative pb-20">
         <div className="grid gap-10 lg:grid-cols-[280px,1fr]">
           <aside className="rounded-3xl border border-border/60 bg-background/80 p-6 shadow-sm backdrop-blur">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
