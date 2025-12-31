@@ -146,3 +146,9 @@ export const POSTS_EXCEPT_QUERY = groq`*[_type == "post" && _id != $postId && de
     slug
   }
 }`;
+
+export const POST_SLUGS_QUERY = groq`*[_type == "post" && defined(slug.current)]{
+  "slug": slug.current,
+  publishedAt,
+  _updatedAt
+}`;

@@ -18,3 +18,8 @@ export const AUTHOR_BY_SLUG_QUERY = groq`*[_type == "author" && slug.current == 
     }
   }
 }`;
+
+export const AUTHOR_SLUGS_QUERY = groq`*[_type == "author" && defined(slug.current)]{
+  "slug": slug.current,
+  _updatedAt
+}`;
