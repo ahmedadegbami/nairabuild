@@ -7,20 +7,20 @@ import YouTubeConsentEmbed from "@/components/youtube-consent-embed";
 const buildComponents = (creditLabel?: string): PortableTextComponents => ({
   block: {
     h2: ({ children }) => (
-      <h2 className="mt-10 text-2xl font-semibold tracking-tight">
+      <h2 className="mt-4 text-2xl font-semibold tracking-tight">
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="mt-8 text-xl font-semibold tracking-tight">{children}</h3>
+      <h3 className="mt-3 text-xl font-semibold tracking-tight">{children}</h3>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="mt-6 border-l-2 pl-4 text-muted-foreground">
+      <blockquote className="mt-2 border-l-2 pl-4 text-muted-foreground">
         {children}
       </blockquote>
     ),
     normal: ({ children }) => (
-      <p className="mt-5 text-base leading-relaxed text-foreground/90">
+      <p className="mt-0 text-base leading-normal text-foreground/90 first:mt-0">
         {children}
       </p>
     ),
@@ -50,12 +50,12 @@ const buildComponents = (creditLabel?: string): PortableTextComponents => ({
   },
   list: {
     bullet: ({ children }) => (
-      <ul className="mt-3 list-disc space-y-1.5 pl-5 text-foreground/90">
+      <ul className="-mt-1 list-disc space-y-1 pl-5 leading-snug text-foreground/90">
         {children}
       </ul>
     ),
     number: ({ children }) => (
-      <ol className="mt-3 list-decimal space-y-1.5 pl-5 text-foreground/90">
+      <ol className="-mt-1 list-decimal space-y-1 pl-5 leading-snug text-foreground/90">
         {children}
       </ol>
     ),
@@ -72,7 +72,7 @@ const buildComponents = (creditLabel?: string): PortableTextComponents => ({
       const creditUrl = value?.creditUrl as string | undefined;
 
       return (
-        <figure className="mt-6">
+        <figure className="mt-2">
           <div className="overflow-hidden rounded-2xl border border-border/60 bg-muted">
             <Image
               src={src}
@@ -114,7 +114,7 @@ const buildComponents = (creditLabel?: string): PortableTextComponents => ({
       const creditUrl = value?.creditUrl as string | undefined;
 
       return (
-        <figure className="mt-6">
+        <figure className="mt-2">
           <div className="overflow-hidden rounded-2xl border border-border/60 bg-black">
             <video className="w-full" controls preload="metadata">
               <source src={url} />
@@ -151,7 +151,7 @@ const buildComponents = (creditLabel?: string): PortableTextComponents => ({
       const videoId = extractYouTubeId(url);
       if (!videoId) {
         return (
-          <figure className="mt-4">
+          <figure className="mt-2">
             <p className="text-sm">
               <a
                 href={url}
@@ -182,7 +182,7 @@ const buildComponents = (creditLabel?: string): PortableTextComponents => ({
       }
 
       return (
-        <figure className="mt-6">
+        <figure className="mt-2">
           <YouTubeConsentEmbed videoId={videoId} url={url} />
           {credit ? (
             <figcaption className="mt-2 text-xs text-muted-foreground">
@@ -235,5 +235,7 @@ export default function PortableTextRenderer({
     return null;
   }
 
-  return <PortableText value={value} components={buildComponents(creditLabel)} />;
+  return (
+    <PortableText value={value} components={buildComponents(creditLabel)} />
+  );
 }
