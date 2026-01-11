@@ -77,7 +77,7 @@ export default async function AuthorPage({ params }: PageProps) {
               {authorInitials}
             </div>
           )}
-          <div className="flex flex-col gap-3 text-center">
+          <div className="flex flex-col gap-3 text-left">
             <h1 className="text-2xl font-semibold tracking-tight">
               {author.name}
             </h1>

@@ -7,12 +7,14 @@ import YouTubeConsentEmbed from "@/components/youtube-consent-embed";
 const buildComponents = (creditLabel?: string): PortableTextComponents => ({
   block: {
     h2: ({ children }) => (
-      <h2 className="mt-4 text-2xl font-semibold tracking-tight">
+      <h2 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="mt-3 text-xl font-semibold tracking-tight">{children}</h3>
+      <h3 className="mt-3 text-xl font-semibold tracking-tight text-foreground">
+        {children}
+      </h3>
     ),
     blockquote: ({ children }) => (
       <blockquote className="mt-2 border-l-2 pl-4 text-muted-foreground">
@@ -50,12 +52,12 @@ const buildComponents = (creditLabel?: string): PortableTextComponents => ({
   },
   list: {
     bullet: ({ children }) => (
-      <ul className="-mt-1 list-disc space-y-1 pl-5 leading-snug text-foreground/90">
+      <ul className="mt-2 list-disc space-y-2 pl-5 leading-relaxed text-foreground/90">
         {children}
       </ul>
     ),
     number: ({ children }) => (
-      <ol className="-mt-1 list-decimal space-y-1 pl-5 leading-snug text-foreground/90">
+      <ol className="mt-2 list-decimal space-y-2 pl-5 leading-relaxed text-foreground/90">
         {children}
       </ol>
     ),
