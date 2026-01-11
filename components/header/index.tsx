@@ -1,7 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
+import { fetchSiteSettings } from "@/sanity/lib/fetch";
 
-export default function Header() {
+export default async function Header() {
+  const settings = await fetchSiteSettings();
   return (
     <header className="sticky top-0 z-50 w-full border-border/40 bg-background/95">
       <div className="container flex h-14 items-center justify-between">
@@ -12,9 +14,9 @@ export default function Header() {
         >
           <Image
             src="/naira_build_logo.svg"
-            alt="Naira Build"
-            width={100}
-            height={80}
+            alt={settings?.siteName || "Nairabuild"}
+            width={120}
+            height={40}
             priority
           />
         </Link>

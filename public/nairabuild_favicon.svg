@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="34 34 188 188" role="img" aria-label="NairaBuild hash icon">
+  <title>#</title>
+  <g fill="none" stroke="#1B8F3A" stroke-width="28" stroke-linecap="round">
+    <path d="M96 48 V208"></path>
+    <path d="M160 48 V208"></path>
+    <path d="M48 96 H208"></path>
+    <path d="M48 160 H208"></path>
+  </g>
+</svg>

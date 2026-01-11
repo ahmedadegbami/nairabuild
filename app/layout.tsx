@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/naira_build_logo.png", type: "image/png" },
+      { url: "/nairabuild_favicon.svg", type: "image/svg+xml" },
       "/favicon.ico",
     ],
   },
@@ -60,8 +60,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <link rel="icon" href="/naira_build_logo.png?v=1" type="image/png" />
-      <link rel="apple-touch-icon" href="/naira_build_logo.png?v=1" />
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased overscroll-none",

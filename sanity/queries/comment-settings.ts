@@ -1,0 +1,32 @@
+import { groq } from "next-sanity";
+
+export const COMMENT_SETTINGS_QUERY = groq`*[_type == "commentSettings"][0]{
+  commentsTitle,
+  commentFormTitle,
+  commentsEmptyText,
+  commentNameLabel,
+  commentNamePlaceholder,
+  commentEmailLabel,
+  commentEmailPlaceholder,
+  commentBodyLabel,
+  commentBodyPlaceholder,
+  commentSubmitLabel,
+  commentSignInTitle,
+  commentSignInHelper,
+  commentSignInButtonLabel,
+  commentSignInSentMessage,
+  commentSignInErrorMessage,
+  commentSignOutLabel,
+  commentLeaveLabel,
+  commentReplyLabel,
+  commentEditLabel,
+  commentDeleteLabel,
+  commentEditedLabel,
+  commentDeletedLabel,
+  commentShowRepliesLabel,
+  commentHideRepliesLabel,
+  commentAuthorBadgeLabel,
+  commentSuccessMessage,
+  commentErrorMessage,
+  commentRateLimitMessage
+}`;
