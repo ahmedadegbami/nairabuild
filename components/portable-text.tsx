@@ -22,7 +22,7 @@ const buildComponents = (creditLabel?: string): PortableTextComponents => ({
       </blockquote>
     ),
     normal: ({ children }) => (
-      <p className="mt-0 text-base leading-normal text-foreground/90 first:mt-0">
+      <p className="mt-0 text-base leading-snug text-foreground/90 first:mt-0">
         {children}
       </p>
     ),
@@ -52,12 +52,12 @@ const buildComponents = (creditLabel?: string): PortableTextComponents => ({
   },
   list: {
     bullet: ({ children }) => (
-      <ul className="mt-2 list-disc space-y-2 pl-5 leading-relaxed text-foreground/90">
+      <ul className="mt-0 list-disc space-y-2 pl-5 leading-normal text-foreground/90">
         {children}
       </ul>
     ),
     number: ({ children }) => (
-      <ol className="mt-2 list-decimal space-y-2 pl-5 leading-relaxed text-foreground/90">
+      <ol className="mt-0 list-decimal space-y-2 pl-5 leading-normal text-foreground/90">
         {children}
       </ol>
     ),

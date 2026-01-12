@@ -20,6 +20,8 @@ type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
+export const revalidate = 60;
+
 type CommentNode = {
   _id: string;
   name: string;
@@ -118,6 +120,9 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     description,
     openGraph: imageUrl
       ? {
+          title,
+          description,
+          type: "article",
           images: [
             {
               url: imageUrl,
@@ -125,6 +130,14 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
               height: 630,
             },
           ],
+        }
+      : undefined,
+    twitter: imageUrl
+      ? {
+          card: "summary_large_image",
+          title,
+          description,
+          images: [imageUrl],
         }
       : undefined,
   };
