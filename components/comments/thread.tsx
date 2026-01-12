@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { MoreHorizontal } from "lucide-react";
 
 type CommentNode = {
@@ -91,6 +92,10 @@ export default function CommentThread({
   const [editStatus, setEditStatus] = useState<"idle" | "saving" | "error">(
     "idle"
   );
+  const [deleteTarget, setDeleteTarget] = useState<CommentNode | null>(null);
+  const [deleteStatus, setDeleteStatus] = useState<
+    "idle" | "deleting" | "error"
+  >("idle");
 
   useEffect(() => {
     setLocalComments(comments);
@@ -203,9 +208,9 @@ export default function CommentThread({
 
     const depthStyles = [
       "bg-transparent border-transparent shadow-none ring-0",
-      "bg-zinc-50 border-zinc-300",
-      "bg-zinc-100 border-zinc-300",
-      "bg-zinc-200 border-zinc-300",
+      "bg-muted/40 border-border/60",
+      "bg-muted/60 border-border/60",
+      "bg-muted/80 border-border/60",
     ];
     const depthClass = depthStyles[Math.min(depth, depthStyles.length - 1)];
 
@@ -239,7 +244,7 @@ export default function CommentThread({
           <div className="flex flex-wrap items-center gap-2">
             <span>{displayName}</span>
             {comment.isStaff ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-zinc-600">
+              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                 <span className="flex h-3 w-3 items-center justify-center rounded-full bg-emerald-500 text-[9px] text-white">
                   ✓
                 </span>
@@ -275,43 +280,9 @@ export default function CommentThread({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   variant="destructive"
-                  onSelect={async () => {
-                    const scrollTop = window.scrollY;
-                    const confirmed = window.confirm(
-                      "Delete this comment? This cannot be undone."
-                    );
-                    if (!confirmed) return;
-                    const supabase = createSupabaseBrowserClient();
-                    if (!supabase) {
-                      return;
-                    }
-                    const { data: sessionData } = await supabase.auth.getSession();
-                    const accessToken = sessionData?.session?.access_token;
-                    if (!accessToken) {
-                      return;
-                    }
-                    const response = await fetch(
-                      `/api/comments/${comment._id}`,
-                      {
-                        method: "DELETE",
-                        headers: {
-                          Authorization: `Bearer ${accessToken}`,
-                        },
-                      }
-                    );
-                    if (!response.ok) {
-                      return;
-                    }
-                    setLocalComments((prev) =>
-                      updateComment(prev, comment._id, (item) => ({
-                        ...item,
-                        body: "",
-                        deletedAt: new Date().toISOString(),
-                      }))
-                    );
-                    requestAnimationFrame(() => {
-                      window.scrollTo({ top: scrollTop });
-                    });
+                  onSelect={() => {
+                    setDeleteTarget(comment);
+                    setDeleteStatus("idle");
                   }}
                 >
                   {labels.deleteLabel}
@@ -457,7 +428,7 @@ export default function CommentThread({
           </div>
         ) : null}
         {visibleReplies.length ? (
-          <div className="mt-4 border-l-2 border-zinc-300 pl-4">
+          <div className="mt-4 border-l-2 border-border/60 pl-4">
             {visibleReplies.map((reply) => renderComment(reply, depth + 1))}
           </div>
         ) : null}
@@ -581,8 +552,8 @@ export default function CommentThread({
         />
       ) : null}
       {!localComments.length && emptyText ? (
-        <div className="rounded-2xl border border-dashed border-zinc-200 bg-zinc-50/70 px-6 py-5 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-200 text-zinc-600">
+        <div className="rounded-2xl border border-dashed border-border/60 bg-muted/40 px-6 py-5 text-center">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
             <svg
               aria-hidden="true"
               className="h-6 w-6"
@@ -601,17 +572,70 @@ export default function CommentThread({
         </div>
       ) : null}
       {localComments.length ? (
-        <div className="rounded-2xl border border-zinc-200 bg-white">
+        <div className="rounded-2xl border border-border/60 bg-background">
           {localComments.map((comment, index) => (
             <div
               key={comment._id}
-              className={index ? "border-t border-zinc-200" : ""}
+              className={index ? "border-t border-border/60" : ""}
             >
               {renderComment(comment, 0)}
             </div>
           ))}
         </div>
       ) : null}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title={
+          labels.deleteLabel ? `${labels.deleteLabel} comment?` : "Delete comment?"
+        }
+        description="This cannot be undone."
+        confirmLabel={labels.deleteLabel || "Delete"}
+        cancelLabel="Cancel"
+        confirmDisabled={deleteStatus === "deleting"}
+        errorMessage={deleteStatus === "error" ? "Delete failed." : undefined}
+        onCancel={() => {
+          setDeleteTarget(null);
+          setDeleteStatus("idle");
+        }}
+        onConfirm={async () => {
+          if (!deleteTarget) return;
+          const scrollTop = window.scrollY;
+          setDeleteStatus("deleting");
+          const supabase = createSupabaseBrowserClient();
+          if (!supabase) {
+            setDeleteStatus("error");
+            return;
+          }
+          const { data: sessionData } = await supabase.auth.getSession();
+          const accessToken = sessionData?.session?.access_token;
+          if (!accessToken) {
+            setDeleteStatus("error");
+            return;
+          }
+          const response = await fetch(`/api/comments/${deleteTarget._id}`, {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+          if (!response.ok) {
+            setDeleteStatus("error");
+            return;
+          }
+          setLocalComments((prev) =>
+            updateComment(prev, deleteTarget._id, (item) => ({
+              ...item,
+              body: "",
+              deletedAt: new Date().toISOString(),
+            }))
+          );
+          setDeleteTarget(null);
+          setDeleteStatus("idle");
+          requestAnimationFrame(() => {
+            window.scrollTo({ top: scrollTop });
+          });
+        }}
+      />
     </div>
   );
 }
