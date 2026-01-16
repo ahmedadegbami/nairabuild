@@ -217,7 +217,13 @@ export default async function PostPage({ params }: PageProps) {
             )
           )}
           {post.publishedAt ? (
-            <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
+            <span>
+              {new Intl.DateTimeFormat("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              }).format(new Date(post.publishedAt))}
+            </span>
           ) : null}
         </div>
         {post.author?.name ? (
