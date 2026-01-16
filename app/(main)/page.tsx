@@ -11,7 +11,7 @@ import { urlFor } from "@/sanity/lib/image";
 import PostsSearch from "@/components/posts-search";
 import ScrollToHash from "@/components/scroll-to-hash";
 
-const POSTS_PER_PAGE = 3;
+const POSTS_PER_PAGE = 9;
 
 type PageProps = {
   searchParams?: Promise<{ category?: string; page?: string; q?: string }>;
@@ -218,7 +218,10 @@ export default async function IndexPage({ searchParams }: PageProps) {
               <h2 className="text-2xl font-semibold tracking-tight">
                 {settings?.postsTitle}
               </h2>
-              <PostsSearch initialQuery={searchQuery} category={selectedCategory} />
+              <PostsSearch
+                initialQuery={searchQuery}
+                category={selectedCategory}
+              />
             </div>
             <div className="mt-6 min-h-[420px]">
               {posts.length ? (
@@ -285,7 +288,10 @@ export default async function IndexPage({ searchParams }: PageProps) {
                     const prev = paginationPages[index - 1];
                     const showEllipsis = prev && page - prev > 1;
                     return (
-                      <span key={`page-${page}`} className="flex items-center gap-2">
+                      <span
+                        key={`page-${page}`}
+                        className="flex items-center gap-2"
+                      >
                         {showEllipsis ? (
                           <span className="px-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                             ...
